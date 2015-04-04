@@ -6,13 +6,12 @@ from xml.sax.saxutils import quoteattr
 
 class Element:
     """
-    Override tag name in sub class
-    """
-    TAG_NAME = 'element'
-
-    """
     Basic element class
     """
+
+    # Override tag name in sub class
+    TAG_NAME = 'element'
+
     def __init__(self, attributes=None, tag_name=None):
         """
         Create a new Element with the given attributes.
@@ -36,6 +35,23 @@ class Element:
         :return:
         """
         self.elements.append(element)
+
+    def has_element(self, class_type):
+        """
+        Returns whether or not this element contains a child
+        element of the given type
+        :param class_type:
+        :return:
+        """
+        return len(self.get_elements(class_type)) > 0
+
+    def get_elements(self, class_type):
+        """
+        Returns all elements of the given class type
+        :param class_type:
+        :return:
+        """
+        return [el for el in self.elements if isinstance(el, class_type)]
 
     def render_attributes(self):
         """
