@@ -1,5 +1,6 @@
 from element import Element
-from util.euclid import Vector3, Quaternion
+from math import Vector3, Quaternion, RotationMatrix
+from math import vectors_orthogonal, vectors_parallel
 from util import number_format as nf
 
 
@@ -100,7 +101,21 @@ class Posable(Element):
         """
         return self.pose.position
 
-    def render_attributes(self):
+    def translate(self, translation: Vector3):
+        """
+        :param translation:
+        :return:
+        """
+        self.set_position(self.get_position() + translation)
+
+    def rotate(self, rotation: Quaternion):
+        """
+        :param rotation:
+        :return:
+        """
+        self.set_rotation(rotation * self.get_rotation())
+
+    def render_attributes(self) -> dict:
         """
         Adds name to the render attributes
         :return:
@@ -109,7 +124,7 @@ class Posable(Element):
         attrs.update({"name": self.name})
         return attrs
 
-    def render_elements(self):
+    def render_elements(self) -> list:
         """
         Adds pose to the render elements
         :return:
@@ -130,7 +145,7 @@ class Posable(Element):
         quat = Quaternion.new_rotate_axis(angle, axis)
         self.set_rotation(quat * self.get_rotation())
 
-    def to_parent_direction(self, vec: Vector3):
+    def to_parent_direction(self, vec: Vector3) -> Vector3:
         """
         Returns the given direction vector relative to the parent frame.
         :param vec: Vector in the local frame
@@ -138,7 +153,7 @@ class Posable(Element):
         """
         return self.get_rotation() * vec
 
-    def to_local_direction(self, vec: Vector3):
+    def to_local_direction(self, vec: Vector3) -> Vector3:
         """
         Returns the given direction vector relative to the local frame
         :param vec: Direction vector in the parent frame
@@ -146,7 +161,7 @@ class Posable(Element):
         """
         return self.get_rotation().conjugated() * vec
 
-    def to_parent_frame(self, vec: Vector3):
+    def to_parent_frame(self, vec: Vector3) -> Vector3:
         """
         Returns the given vector relative to the parent frame
         :param vec: Vector in the local frame
@@ -156,7 +171,7 @@ class Posable(Element):
         pos = self.get_position()
         return (rot * vec) + pos
 
-    def to_local_frame(self, vec: Vector3):
+    def to_local_frame(self, vec: Vector3) -> Vector3:
         """
         Returns the given vector relative to the local frame
         :param vec: Vector in the parent frame
@@ -165,6 +180,99 @@ class Posable(Element):
         rot = self.get_rotation().conjugated()
         pos = self.get_position()
         return rot * (vec - pos)
+
+    def align(self, my: Vector3, my_normal: Vector3, my_tangent: Vector3, at: Vector3,
+              at_normal: Vector3, at_tangent: Vector3, of, relative_to_child=True):
+        """
+        Rotates and translates this posable, such that the
+        ends of the vectors `my` and `at` touch, aligning
+        such that `my_normal` points in the opposite direction of `at_normal`
+        and `my_tangent` and `at_tangent` align.
+
+        The two posables need to be in the same parent frame
+        for this to work.
+
+        You can choose to specify the positions and orientations either in the parent
+        frame or in the child frame using the final argument to this method.
+        Be aware that representing orientation vectors in the parent frame
+        merely means that they are already rotated with respect to their parent,
+        not translated.
+        :param my:
+        :param my_normal:
+        :param my_tangent:
+        :param at:
+        :param at_normal:
+        :param at_tangent:
+        :param of:
+        :type of: Posable
+        :param relative_to_child:
+        :return:
+        """
+        if not vectors_orthogonal(my_normal, my_tangent):
+            raise ValueError("`my_normal` and `my_tangent` should be orthogonal.")
+
+        if not vectors_orthogonal(at_normal, at_tangent):
+            raise ValueError("`at_normal` and `at_tangent` should be orthogonal.")
+
+        # Convert all vectors to local frame if not currently there,
+        # we will need this as reference after rotation.
+        if not relative_to_child:
+            my = self.to_local_frame(my)
+            my_normal = self.to_local_direction(my_normal)
+            my_tangent = self.to_local_direction(my_tangent)
+
+            at = of.to_local_frame(at)
+            at_normal = of.to_local_direction(at_normal)
+            at_tangent = of.to_local_direction(at_tangent)
+
+        # This explains how to do the alignment easily:
+        # http://stackoverflow.com/questions/21828801/how-to-find-correct-rotation-from-one-vector-to-another
+
+        # We define coordinate systems in which "normal", "tangent" and "normal x tangent" are
+        # the x, y and z axis (normal x tangent is the cross product). We then determine two
+        # rotation matrices, one for the rotation of the standard basis to "my" (R1):
+        my_x = self.to_parent_direction(my_normal).normalized()
+        my_y = self.to_parent_direction(my_tangent).normalized()
+        my_z = my_x.cross(my_y)
+
+        # and one for the rotation of "at" (R2):
+        at_x = of.to_parent_direction(-at_normal).normalized()
+        at_y = of.to_parent_direction(at_tangent).normalized()
+        at_z = at_x.cross(at_y)
+
+        # We now want to provide the rotation matrix from R1 to R2.
+        # The easiest way to visualize this is if we first perform
+        # the inverse rotation from R1 back to the standard basis,
+        # and then rotate to R2.
+        r1 = RotationMatrix()
+        r2 = RotationMatrix()
+
+        # Warning: `RotationMatrix` is a Matrix4 that can potentially
+        # do translations. We want to assign the first block of
+        # these matrices only. Assignment happens by columns.
+        r1[0:3], r1[4:7], r1[8:11] = my_x, my_y, my_z
+        r2[0:3], r2[4:7], r2[8:11] = at_x, at_y, at_z
+
+        # The columns of r1 are orthonormal, so we can simply
+        # transpose the matrix to get the inverse rotation
+        r1.transpose()
+
+        # The final rotation is the inverse of r1, followed by r2
+        # (left multiplication)
+        """:type : RotationMatrix"""
+        rotation = r2 * r1
+        self.set_rotation(rotation.get_quaternion())
+
+        assert vectors_parallel(self.to_parent_direction(my_normal),
+                                of.to_parent_direction(at_normal)), "Normal vectors failed to align!"
+        assert vectors_parallel(self.to_parent_direction(my_tangent),
+                                of.to_parent_direction(at_tangent)), "Tangent vectors failed to align!"
+
+        # Finally, translate so that `my` lands at `at`
+        my_pos = self.to_parent_frame(my)
+        at_pos = of.to_parent_frame(at)
+        translation = at_pos - my_pos
+        self.translate(translation)
 
 
 class PosableGroup(Posable):
@@ -191,7 +299,7 @@ class PosableGroup(Posable):
         posables = self.get_affected_posables()
 
         for posable in posables:
-            posable.set_position(posable.get_position() + translation)
+            posable.translate(translation)
 
         # Store root position
         super().set_position(position)
