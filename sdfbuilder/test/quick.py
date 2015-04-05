@@ -4,6 +4,7 @@ to follow later.
 """
 from ..base import Model, Link, PosableGroup, SDF
 from ..math import Vector3
+from math import pi
 
 
 model = Model("temp_bot")
@@ -76,6 +77,7 @@ group.align(
 
 model.add_element(group)
 model.add_element(link2)
+model.rotate_around(Vector3(0, 1, 0), 0.2 * pi)
 
 sdf = SDF()
 sdf.add_element(model)

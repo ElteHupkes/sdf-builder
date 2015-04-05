@@ -335,7 +335,6 @@ class PosableGroup(Posable):
         """
         return [el for el in super().render_elements() if not isinstance(el, Pose)]
 
-
     def set_rotation(self, rotation: Quaternion):
         """
         Set the rotation of this posable group, moving all the posables
