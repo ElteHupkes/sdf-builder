@@ -1,7 +1,7 @@
-from element import Element
-from math import Vector3, Quaternion, RotationMatrix
-from math import vectors_orthogonal, vectors_parallel
-from util import number_format as nf
+from .element import Element
+from ..math import Vector3, Quaternion, RotationMatrix
+from ..math import vectors_orthogonal, vectors_parallel
+from ..util import number_format as nf
 
 
 class Pose(Element):
@@ -283,6 +283,19 @@ class PosableGroup(Posable):
     the items within the group together, whilst their position remains
     relative to the groups parent.
     """
+
+    # We don't want to render outer posable group
+    TAG_NAME = None
+
+    def __init__(self, name=None, **kwargs):
+        """
+        Overrides init to make name optional, it is not useful
+        for posable groups.
+        :param name:
+        :param kwargs:
+        :return:
+        """
+        super().__init__(name=name, **kwargs)
 
     def set_position(self, position: Vector3):
         """

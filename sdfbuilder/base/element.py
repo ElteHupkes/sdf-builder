@@ -9,8 +9,11 @@ class Element:
     Basic element class
     """
 
-    # Override tag name in sub class
-    TAG_NAME = 'element'
+    """
+    Tag name to override in subclass. If the tag name is None,
+    the wrapper is not rendered.
+    """
+    TAG_NAME = None
 
     def __init__(self, attributes=None, tag_name=None):
         """
@@ -83,21 +86,22 @@ class Element:
 
     def render(self):
         """
-        Renders this element according to its properties, using the
-        additional attributes "attributes"
-        :param attributes: Dictionary with element attributes
-        :param elements: Extra elements to add
-        :param body: String body
+        Renders this element according to its properties.
         :return:
         """
         all_attrs = self.render_attributes()
 
-        attrs = " ".join([a+"="+quoteattr(all_attrs[a]) for a in all_attrs])
         body = self.render_body()
         tag_name = self.TAG_NAME if self.tag_name is None else self.tag_name
-        tag_open = tag_name + " " + attrs if len(attrs) else tag_name
 
-        return "<%s>%s</%s>" % (tag_open, body, self.TAG_NAME)
+        if tag_name is None:
+            templ = "%s"
+        else:
+            attrs = " ".join([a+"="+quoteattr(all_attrs[a]) for a in all_attrs])
+            tag_open = tag_name + " " + attrs if len(attrs) else tag_name
+            templ = "<%s>%s</%s>" % (tag_open, "%s", tag_name)
+
+        return templ % body
 
     def __str__(self):
         """

@@ -1,7 +1,8 @@
 from .posable import Posable
-from physics import Inertial
-from .structure import Collision, Visual
-from .structure.geometries import Box
+from ..physics import Inertial
+from ..structure import Collision, Visual
+from ..structure.geometries import Box
+
 
 class Link(Posable):
     """

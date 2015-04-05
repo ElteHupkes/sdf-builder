@@ -1,0 +1,135 @@
+from ..base.posable import Posable
+from ..base.element import Element
+from ..math import Vector3
+from ..util import number_format as nf
+
+
+class Joint(Posable):
+    """
+    Joint base class, though using the base class should
+    suffice for most uses.
+    """
+    # Joint tag name
+    TAG_NAME = "joint"
+
+    # Joint has a pose, but it is not in the parent frame
+    PARENT_FRAME = False
+
+    def __init__(self, joint_type: str, parent: Posable, child: Posable, axis=None, name=None, **kwargs):
+        """
+
+        :param parent:
+        :param child:
+        :param name:
+        :param kwargs:
+        :return:
+        """
+        if name is None:
+            name = "joint_"+parent.name+"_"+child.name
+
+        super().__init__(name=name, **kwargs)
+
+        self.parent = parent
+        self.child = child
+        self.type = joint_type
+
+        self.axis = Axis() if axis is None else axis
+
+    def render_elements(self):
+        """
+        Adds joint elements to be rendered
+        """
+        elements = ["<parent>"+self.parent.name+"</parent>",
+                    "<child>"+self.child.name+"</child>",
+                    self.axis]
+        return super().render_elements() + elements
+
+    def render_attributes(self):
+        """
+        Add type to the attributes to be rendered
+        """
+        attrs = super().render_attributes()
+        attrs['type'] = self.type
+        return attrs
+
+
+class Axis(Element):
+    """
+    Defines a joint axis
+    """
+    # Note that this might just as well be used for
+    # an axis2, just override the property in init.
+    TAG_NAME = "axis"
+
+    def __init__(self, axis: Vector3=None, limit=None, use_parent_model_frame=False, **kwargs):
+        """
+        :param x:
+        :param y:
+        :param z:
+        :return:
+        """
+        super().__init__(**kwargs)
+
+        if axis is None:
+            axis = Vector3(1, 0, 0)
+
+        self.axis = axis.normalized()
+        self.limit = limit
+        self.use_parent_model_frame = use_parent_model_frame
+
+    def render_elements(self):
+        """
+        Add xyz and limit elements
+        """
+        elements = super().render_elements()
+
+        x, y, z = self.axis.x, self.axis.y, self.axis.z
+        xyz = "<xyz>%s %s %s</xyz>" % (nf(x), nf(y), nf(z))
+        elements += [xyz, "<use_parent_model_frame>%d</use_parent_model_frame>" % self.use_parent_model_frame]
+
+        if self.limit:
+            elements.append(self.limit)
+
+        return elements
+
+
+class Limit(Element):
+    """
+    Defines a joint axis limit
+    """
+    # Limit tag name
+    TAG_NAME = "limit"
+
+    def __init__(self, lower=None, upper=None, effort=None, velocity=None,
+                 stiffness=None, dissipation=None, **kwargs):
+        """
+        :param lower:
+        :param upper:
+        :param effort:
+        :param velocity:
+        :param stiffness:
+        :param dissipation:
+        :return:
+        """
+        super().__init__(**kwargs)
+
+        self.lower = lower
+        self.upper = upper
+        self.effort = effort
+        self.velocity = velocity
+        self.stiffness = stiffness
+        self.dissipation = dissipation
+
+    def render_elements(self):
+        """
+        Add local properties to the elements to be rendered.
+        :return:
+        """
+        elements = super().render_elements()
+
+        for attr in ['lower', 'upper', 'effort', 'velocity', 'stiffness', 'dissipation']:
+            val = getattr(self, attr, None)
+            if val is not None:
+                elements.append("<%s>%s</%s>" % (attr, nf(val), attr))
+
+        return elements
