@@ -11,7 +11,13 @@ class Link(Posable):
     TAG_NAME = 'link'
 
     def __init__(self, name, **kwargs):
-        super().__init__(name, **kwargs)
+        """
+
+        :param name:
+        :param kwargs:
+        :return:
+        """
+        super().__init__(name=name, **kwargs)
 
         # Only create inertial if required
         """:type : Inertial"""

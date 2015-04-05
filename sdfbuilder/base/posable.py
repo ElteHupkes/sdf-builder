@@ -27,8 +27,10 @@ class Pose(Element):
         rotation Quaternion.
         """
         # Quaternion.get_euler() returns heading, attitude, bank,
-        # which are yaw, pitch, roll respectively.
-        yaw, pitch, roll = self.rotation.get_euler()
+        # which are rotations along the Y, Z and X attitude
+        # respectively according to the pyeuclid docs. Gazebo
+        # uses roll, pitch, yaw thus capture them in that order
+        pitch, yaw, roll = self.rotation.get_euler()
         return roll, pitch, yaw
 
     def render_body(self):
@@ -61,7 +63,6 @@ class Posable(Element):
 
     def __init__(self, name, pose=None, **kwargs):
         """
-
         :param name:
         :param kwargs:
         :return:
@@ -129,7 +130,7 @@ class Posable(Element):
         Adds pose to the render elements
         :return:
         """
-        return super().render_elements() + [self.pose]
+        return [self.pose] + super().render_elements()
 
     def rotate_around(self, axis: Vector3, angle, relative_to_child=False):
         """
@@ -264,7 +265,7 @@ class Posable(Element):
         self.set_rotation(rotation.get_quaternion())
 
         assert vectors_parallel(self.to_parent_direction(my_normal),
-                                of.to_parent_direction(at_normal)), "Normal vectors failed to align!"
+                                of.to_parent_direction(-at_normal)), "Normal vectors failed to align!"
         assert vectors_parallel(self.to_parent_direction(my_tangent),
                                 of.to_parent_direction(at_tangent)), "Tangent vectors failed to align!"
 
@@ -325,6 +326,15 @@ class PosableGroup(Posable):
         """
         return [posable for posable in self.elements
                 if isinstance(posable, Posable) and posable.PARENT_FRAME]
+
+    def render_elements(self):
+        """
+        Filter the pose out of the group's elements; we don't
+        want it rendered
+        :return:
+        """
+        return [el for el in super().render_elements() if not isinstance(el, Pose)]
+
 
     def set_rotation(self, rotation: Quaternion):
         """

@@ -15,7 +15,7 @@ class Element:
     """
     TAG_NAME = None
 
-    def __init__(self, attributes=None, tag_name=None):
+    def __init__(self, **kwargs):
         """
         Create a new Element with the given attributes.
 
@@ -24,8 +24,8 @@ class Element:
         :param attributes: The element attributes
         :return:
         """
-        self.attributes = attributes if attributes else {}
-        self.tag_name = tag_name
+        self.attributes = kwargs["attributes"] if "attributes" in kwargs else {}
+        self.tag_name = kwargs["tag_name"] if "tag_name" in kwargs else None
 
         # Array of sub-elements, each of these elements
         # is converted
