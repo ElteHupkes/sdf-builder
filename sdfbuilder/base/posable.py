@@ -1,3 +1,4 @@
+from math import atan2, asin, pi
 from .element import Element
 from ..math import Vector3, Quaternion, RotationMatrix
 from ..math import vectors_orthogonal, vectors_parallel
@@ -26,16 +27,33 @@ class Pose(Element):
         Returns roll, pitch, yaw from the
         rotation Quaternion.
         """
-        # Quaternion.get_euler() returns heading, attitude, bank,
-        # which are rotations along the Y, Z and X attitude
-        # respectively according to the pyeuclid docs. Gazebo
-        # uses roll, pitch, yaw thus capture them in that order
-        pitch, yaw, roll = self.rotation.get_euler()
+        # Quaternion.get_euler() does not correspond to what
+        # the values we expect for roll, pitch, yaw, so instead
+        # I've taken the liberty to do it myself here inspired
+        # by how Gazebo does it
+        r = self.rotation
+        w, x, y, z = r.w, r.x, r.y, r.z
+
+        squ = w**2
+        sqx = x**2
+        sqy = y**2
+        sqz = z**2
+
+        roll = atan2(2 * (y*z + w*x), squ - sqx - sqy + sqz)
+
+        sarg = -2 * (x*z - w * y)
+        if sarg <= -1.0:
+            pitch = -0.5 * pi
+        elif sarg >= 1.0:
+            pitch = 0.5 * pi
+        else:
+            pitch = asin(sarg)
+
+        yaw = atan2(2 * (x*y + w*z), squ + sqx - sqy - sqz)
         return roll, pitch, yaw
 
     def render_body(self):
         """
-
         :return:
         """
         body = super().render_body()
@@ -79,7 +97,7 @@ class Posable(Element):
         :return:
 
         """
-        self.pose.rotation = rotation
+        self.pose.rotation = rotation.copy()
 
     def get_rotation(self):
         """
@@ -93,7 +111,7 @@ class Posable(Element):
         :param position:
         :return:
         """
-        self.pose.position = position
+        self.pose.position = position.copy()
 
     def get_position(self):
         """
@@ -134,7 +152,8 @@ class Posable(Element):
 
     def rotate_around(self, axis: Vector3, angle, relative_to_child=False):
         """
-        Rotates this posable `angle` degrees around the given vector.
+        Rotates this posable `angle` degrees around the given
+        directional vector.
         :param axis:
         :param angle:
         :param relative_to_child:
@@ -144,7 +163,7 @@ class Posable(Element):
             axis = self.to_parent_direction(axis)
 
         quat = Quaternion.new_rotate_axis(angle, axis)
-        self.set_rotation(quat * self.get_rotation())
+        self.rotate(quat)
 
     def to_parent_direction(self, vec: Vector3) -> Vector3:
         """
@@ -162,25 +181,24 @@ class Posable(Element):
         """
         return self.get_rotation().conjugated() * vec
 
-    def to_parent_frame(self, vec: Vector3) -> Vector3:
+    def to_parent_frame(self, point: Vector3) -> Vector3:
         """
-        Returns the given vector relative to the parent frame
-        :param vec: Vector in the local frame
+        Returns the given point relative to the parent frame
+        :param point: Point in the local frame
         :return:
         """
-        rot = self.get_rotation()
         pos = self.get_position()
-        return (rot * vec) + pos
+        return self.to_parent_direction(point) + pos
 
-    def to_local_frame(self, vec: Vector3) -> Vector3:
+    def to_local_frame(self, point: Vector3) -> Vector3:
         """
-        Returns the given vector relative to the local frame
-        :param vec: Vector in the parent frame
+        Returns the given point relative to the local frame
+        :param point: Point in the parent frame
         :return:
         """
         rot = self.get_rotation().conjugated()
         pos = self.get_position()
-        return rot * (vec - pos)
+        return rot * (point - pos)
 
     def align(self, my: Vector3, my_normal: Vector3, my_tangent: Vector3, at: Vector3,
               at_normal: Vector3, at_tangent: Vector3, of, relative_to_child=True):
@@ -230,17 +248,20 @@ class Posable(Element):
         # http://stackoverflow.com/questions/21828801/how-to-find-correct-rotation-from-one-vector-to-another
 
         # We define coordinate systems in which "normal", "tangent" and "normal x tangent" are
-        # the x, y and z axis (normal x tangent is the cross product). We then determine two
+        # the x, y and z axes ("normal x tangent" is the cross product). We then determine two
         # rotation matrices, one for the rotation of the standard basis to "my" (R1):
-        my_x = self.to_parent_direction(my_normal).normalized()
-        my_y = self.to_parent_direction(my_tangent).normalized()
+        my_x = my_normal.normalized()
+        my_y = my_tangent.normalized()
         my_z = my_x.cross(my_y)
 
-        # and one for the rotation of "at" (R2):
+        # Note that we are going to determine an absolute rotation, so we need the vectors
+        # in the local frame rather than in the parent frame. We also determine a rotation
+        # matrix for the rotation of "at" (R2):
         at_x = of.to_parent_direction(-at_normal).normalized()
         at_y = of.to_parent_direction(at_tangent).normalized()
         at_z = at_x.cross(at_y)
 
+        # For which we do use the parent frame.
         # We now want to provide the rotation matrix from R1 to R2.
         # The easiest way to visualize this is if we first perform
         # the inverse rotation from R1 back to the standard basis,
@@ -264,10 +285,17 @@ class Posable(Element):
         rotation = r2 * r1
         self.set_rotation(rotation.get_quaternion())
 
-        assert vectors_parallel(self.to_parent_direction(my_normal),
-                                of.to_parent_direction(-at_normal)), "Normal vectors failed to align!"
-        assert vectors_parallel(self.to_parent_direction(my_tangent),
-                                of.to_parent_direction(at_tangent)), "Tangent vectors failed to align!"
+        my_parent_normal = self.to_parent_direction(my_normal)
+        at_parent_normal = of.to_parent_direction(-at_normal)
+        if not vectors_parallel(my_parent_normal, at_parent_normal):
+            print("Vector angle: %f" % my_parent_normal.angle(at_parent_normal), file=sys.stderr)
+            assert False, "Normal vectors failed to align!"
+
+        parent_tangent = self.to_parent_direction(my_tangent)
+        at_parent_tangent = of.to_parent_direction(at_tangent)
+        if not vectors_parallel(parent_tangent, at_parent_tangent):
+            print("Vector angle: %f" % parent_tangent.angle(at_parent_tangent), file=sys.stderr)
+            assert False, "Tangent vectors failed to align!"
 
         # Finally, translate so that `my` lands at `at`
         my_pos = self.to_parent_frame(my)
@@ -349,8 +377,8 @@ class PosableGroup(Posable):
         posables = self.get_affected_posables()
         for posable in posables:
             # Get the position and rotation of the child relative
-            # to this posable (i.e. as if the posable was in [0, 0]
-            # with zero rotation)
+            # to this posable's root (i.e. as if the posable was in [0, 0]
+            # with no rotation)
             orig_position = inv_rotation * (posable.get_position() - root_position)
 
             # The original rotation follows from multiplying the child's rotation

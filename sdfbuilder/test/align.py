@@ -9,6 +9,7 @@ from math import pi
 
 model = Model("temp_bot")
 link = Link("my_link")
+
 minibox = Link("my_minibox")
 
 # Link one is a vertical box
@@ -27,7 +28,8 @@ minibox.align(
     # Tangent vector
     Vector3(1, 0, 0),
 
-    # Top left of link 1
+    # Top left of link 1 (note, we're positioning
+    # the center of minibox, so subtract half its size)
     Vector3(-0.9, -0.9, 2),
 
     # Normal vector
@@ -46,9 +48,18 @@ group = PosableGroup()
 group.add_element(link)
 group.add_element(minibox)
 
+# Move and rotate the group to confuse the mechanism
+# (this should just be undone at the align later)
+group.rotate_around(Vector3(1, 1, 0), 0.1 * pi)
+group.translate(Vector3(0.6, 0.7, 0.8))
+
 # Create a new, larger box called link 2
 link2 = Link("my_link_2")
 link2.make_box(2.0, 4, 3, 3)
+
+# Translate and rotate just to add some extra complexity
+link2.translate(Vector3(0.5, 0.5, 2))
+link2.rotate_around(Vector3(1, 1, 1), 0.5 * pi)
 
 # Now align the group so its right center lands at
 # the top center of link 2
@@ -77,7 +88,7 @@ group.align(
 
 model.add_element(group)
 model.add_element(link2)
-model.rotate_around(Vector3(0, 1, 0), 0.2 * pi)
+model.rotate_around(Vector3(1, 0, 0), 0.2 * pi)
 
 sdf = SDF()
 sdf.add_element(model)
