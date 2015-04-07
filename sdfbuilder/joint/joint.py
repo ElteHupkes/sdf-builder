@@ -1,3 +1,4 @@
+from ..base.link import Link
 from ..base.posable import Posable
 from ..base.element import Element
 from ..math import Vector3
@@ -15,7 +16,7 @@ class Joint(Posable):
     # Joint has a pose, but it is not in the parent frame
     PARENT_FRAME = False
 
-    def __init__(self, joint_type: str, parent: Posable, child: Posable, axis=None, name=None, **kwargs):
+    def __init__(self, joint_type: str, parent: Link, child: Link, axis=None, name=None, **kwargs):
         """
 
         :param parent:
