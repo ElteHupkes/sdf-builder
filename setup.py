@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 from distutils.core import setup
 
-setup(name='SDF Builder',
+setup(name='sdfbuilder',
       version=0.1,
       description='Pragmatic utility library for building SDF files',
       author='Elte Hupkes',
