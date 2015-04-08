@@ -26,6 +26,7 @@ class Element:
         """
         self.attributes = kwargs["attributes"] if "attributes" in kwargs else {}
         self.tag_name = kwargs["tag_name"] if "tag_name" in kwargs else None
+        self.body = kwargs["body"] if "body" in kwargs else ""
 
         # Array of sub-elements, each of these elements
         # is converted
@@ -38,6 +39,14 @@ class Element:
         :return:
         """
         self.elements.append(element)
+
+    def add_elements(self, elements):
+        """
+        Convenience method to add multiple elements at once as a list.
+        :param elements:
+        :return:
+        """
+        self.elements += elements
 
     def has_element(self, class_type):
         """
@@ -82,7 +91,7 @@ class Element:
         :return:
         """
         elements = self.render_elements()
-        return "\n".join(str(element) for element in elements)
+        return "\n".join(str(element) for element in elements) + self.body
 
     def render(self):
         """

@@ -13,4 +13,4 @@ class Model(Posable):
         Returns all child elements in this model which are joints.
         :return:
         """
-        return [el for el in self.elements if isinstance(el, Joint)]
+        return self.get_elements(Joint)

@@ -1,4 +1,4 @@
-from ..base import Element
+from ..base.element import Element
 from ..util import number_format as nf
 
 
