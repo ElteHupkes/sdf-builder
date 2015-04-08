@@ -7,5 +7,6 @@ setup(name='SDF Builder',
       author='Elte Hupkes',
       author_email='elte@hupkes.org',
       url='https://github.com/ElteHupkes/sdf-builder',
-      packages=['sdfbuilder']
+      packages=['sdfbuilder', 'sdfbuilder.base', 'sdfbuilder.joint', 'sdfbuilder.math',
+                'sdfbuilder.physics', 'sdfbuilder.structure', 'sdfbuilder.util']
       )
