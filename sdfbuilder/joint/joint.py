@@ -16,11 +16,15 @@ class Joint(Posable):
     # Joint has a pose, but it is not in the parent frame
     PARENT_FRAME = False
 
-    def __init__(self, joint_type: str, parent: Link, child: Link, axis=None, name=None, **kwargs):
+    def __init__(self, joint_type, parent, child, axis=None, name=None, **kwargs):
         """
 
+        :param joint_type:
+        :type joint_type: str
         :param parent:
+        :type parent: Link
         :param child:
+        :type child: Link
         :param name:
         :param kwargs:
         :return:
@@ -28,7 +32,7 @@ class Joint(Posable):
         if name is None:
             name = "joint_"+parent.name+"_"+child.name
 
-        super().__init__(name=name, **kwargs)
+        super(Joint, self).__init__(name=name, **kwargs)
 
         self.parent = parent
         self.child = child
@@ -43,13 +47,13 @@ class Joint(Posable):
         elements = ["<parent>"+self.parent.name+"</parent>",
                     "<child>"+self.child.name+"</child>",
                     self.axis]
-        return super().render_elements() + elements
+        return super(Joint, self).render_elements() + elements
 
     def render_attributes(self):
         """
         Add type to the attributes to be rendered
         """
-        attrs = super().render_attributes()
+        attrs = super(Joint, self).render_attributes()
         attrs['type'] = self.type
         return attrs
 
@@ -62,14 +66,16 @@ class Axis(Element):
     # an axis2, just override the property in init.
     TAG_NAME = "axis"
 
-    def __init__(self, axis: Vector3=None, limit=None, use_parent_model_frame=False, **kwargs):
+    def __init__(self, axis=None, limit=None, use_parent_model_frame=False, **kwargs):
         """
-        :param x:
-        :param y:
-        :param z:
-        :return:
+        :param axis:
+        :type axis: Vector3
+        :param limit:
+        :type limit: Limit
+        :param use_parent_model_frame:
+        :type use_parent_model_frame: bool
         """
-        super().__init__(**kwargs)
+        super(Axis, self).__init__(**kwargs)
 
         if axis is None:
             axis = Vector3(1, 0, 0)
@@ -82,7 +88,7 @@ class Axis(Element):
         """
         Add xyz and limit elements
         """
-        elements = super().render_elements()
+        elements = super(Axis, self).render_elements()
 
         x, y, z = self.axis.x, self.axis.y, self.axis.z
         xyz = "<xyz>%s %s %s</xyz>" % (nf(x), nf(y), nf(z))
@@ -112,7 +118,7 @@ class Limit(Element):
         :param dissipation:
         :return:
         """
-        super().__init__(**kwargs)
+        super(Limit, self).__init__(**kwargs)
 
         self.lower = lower
         self.upper = upper
@@ -126,7 +132,7 @@ class Limit(Element):
         Add local properties to the elements to be rendered.
         :return:
         """
-        elements = super().render_elements()
+        elements = super(Limit, self).render_elements()
 
         for attr in ['lower', 'upper', 'effort', 'velocity', 'stiffness', 'dissipation']:
             val = getattr(self, attr, None)

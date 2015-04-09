@@ -14,7 +14,7 @@ class SDF(Element):
         :param kwargs:
         :return:
         """
-        super().__init__(**kwargs)
+        super(SDF, self).__init__(**kwargs)
         self.version = version
 
     def render_attributes(self):
@@ -22,7 +22,7 @@ class SDF(Element):
         Adds version attribute
         :return:
         """
-        attrs = super().render_attributes()
+        attrs = super(SDF, self).render_attributes()
         attrs["version"] = self.version
         return attrs
 
@@ -31,5 +31,5 @@ class SDF(Element):
         Adds XML header to render
         :return:
         """
-        body = super().render()
+        body = super(SDF, self).render()
         return "<?xml version=\"1.0\"?>\n"+body

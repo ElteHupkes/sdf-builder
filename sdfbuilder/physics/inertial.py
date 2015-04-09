@@ -14,7 +14,7 @@ class Inertial(Element):
         :param kwargs:
         :return:
         """
-        super().__init__(**kwargs)
+        super(Inertial, self).__init__(**kwargs)
 
         self.ixx, self.ixy, self.ixz = 1, 0, 0
         self.iyy, self.iyz = 1, 0
@@ -52,7 +52,7 @@ class Inertial(Element):
 
         :return:
         """
-        body = super().render_body()
+        body = super(Inertial, self).render_body()
         body += "<mass>%s</mass>" % nf(self.mass)
         body += ("<inertia>"
                  "<ixx>%s</ixx>"

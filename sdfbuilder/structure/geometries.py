@@ -23,7 +23,7 @@ class Box(Geometry):
         :param kwargs:
         :return:
         """
-        super().__init__(**kwargs)
+        super(Box, self).__init__(**kwargs)
         self.size = (x, y, z)
 
     def render_elements(self):
@@ -31,7 +31,7 @@ class Box(Geometry):
         Add box tag
         :return:
         """
-        elements = super().render_elements()
+        elements = super(Box, self).render_elements()
 
         x, y, z = self.size
         elements.append("<box><size>%s %s %s</size></box>" % (nf(x), nf(y), nf(z)))

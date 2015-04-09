@@ -15,7 +15,7 @@ class Structure(Posable):
         :param kwargs:
         :return:
         """
-        super().__init__(name, **kwargs)
+        super(Structure, self).__init__(name, **kwargs)
 
         """:type : Geometry"""
         self.geometry = geometry
@@ -24,7 +24,7 @@ class Structure(Posable):
         """
         :return:
         """
-        return super().render_elements() + [self.geometry]
+        return super(Structure, self).render_elements() + [self.geometry]
 
 
 class Collision(Structure):

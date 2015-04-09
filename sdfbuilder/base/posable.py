@@ -1,8 +1,10 @@
+from __future__ import print_function
 from math import atan2, asin, pi
 from .element import Element
 from ..math import Vector3, Quaternion, RotationMatrix
 from ..math import vectors_orthogonal, vectors_parallel
 from ..util import number_format as nf
+import sys
 
 
 class Pose(Element):
@@ -16,7 +18,7 @@ class Pose(Element):
     def __init__(self, **kwargs):
         """
         """
-        super().__init__(**kwargs)
+        super(Pose, self).__init__(**kwargs)
 
         # Zero position and identity rotation
         self.position = Vector3()
@@ -56,7 +58,7 @@ class Pose(Element):
         """
         :return:
         """
-        body = super().render_body()
+        body = super(Pose, self).render_body()
         roll, pitch, yaw = self.euler_rotation()
         x, y, z = self.position.x, self.position.y, self.position.z
 
@@ -85,14 +87,14 @@ class Posable(Element):
         :param kwargs:
         :return:
         """
-        super().__init__(**kwargs)
+        super(Posable, self).__init__(**kwargs)
 
         self.pose = Pose() if pose is None else pose
         self.name = name
 
-    def set_rotation(self, rotation: Quaternion):
+    def set_rotation(self, rotation):
         """
-
+        :type rotation: Quaternion
         :param rotation: Rotation Quaternion
         :return:
 
@@ -106,8 +108,9 @@ class Posable(Element):
         """
         return self.pose.rotation
 
-    def set_position(self, position: Vector3):
+    def set_position(self, position):
         """
+        :type position: Vector3
         :param position:
         :return:
         """
@@ -120,41 +123,46 @@ class Posable(Element):
         """
         return self.pose.position
 
-    def translate(self, translation: Vector3):
+    def translate(self, translation):
         """
+        :type translation: Vector3
         :param translation:
         :return:
         """
         self.set_position(self.get_position() + translation)
 
-    def rotate(self, rotation: Quaternion):
+    def rotate(self, rotation):
         """
+        :type rotation: Quaternion
         :param rotation:
         :return:
         """
         self.set_rotation(rotation * self.get_rotation())
 
-    def render_attributes(self) -> dict:
+    def render_attributes(self):
         """
         Adds name to the render attributes
         :return:
+        :rtype: dict
         """
-        attrs = super().render_attributes()
+        attrs = super(Posable, self).render_attributes()
         attrs.update({"name": self.name})
         return attrs
 
-    def render_elements(self) -> list:
+    def render_elements(self):
         """
         Adds pose to the render elements
         :return:
+        :rtype: list
         """
-        return [self.pose] + super().render_elements()
+        return [self.pose] + super(Posable, self).render_elements()
 
-    def rotate_around(self, axis: Vector3, angle, relative_to_child=False):
+    def rotate_around(self, axis, angle, relative_to_child=False):
         """
         Rotates this posable `angle` degrees around the given
         directional vector.
         :param axis:
+        :type axis: Vector3
         :param angle:
         :param relative_to_child:
         :return:
@@ -165,43 +173,51 @@ class Posable(Element):
         quat = Quaternion.new_rotate_axis(angle, axis)
         self.rotate(quat)
 
-    def to_parent_direction(self, vec: Vector3) -> Vector3:
+    def to_parent_direction(self, vec):
         """
         Returns the given direction vector relative to the parent frame.
         :param vec: Vector in the local frame
+        :type vec: Vector3
         :return:
+        :rtype: Vector3
         """
         return self.get_rotation() * vec
 
-    def to_local_direction(self, vec: Vector3) -> Vector3:
+    def to_local_direction(self, vec):
         """
         Returns the given direction vector relative to the local frame
         :param vec: Direction vector in the parent frame
+        :type vec: Vector3
         :return:
+        :rtype: Vector3
         """
         return self.get_rotation().conjugated() * vec
 
-    def to_parent_frame(self, point: Vector3) -> Vector3:
+    def to_parent_frame(self, point):
         """
         Returns the given point relative to the parent frame
         :param point: Point in the local frame
+        :type point: Vector3
         :return:
+        :rtype: Vector3
         """
         pos = self.get_position()
         return self.to_parent_direction(point) + pos
 
-    def to_local_frame(self, point: Vector3) -> Vector3:
+    def to_local_frame(self, point):
         """
         Returns the given point relative to the local frame
         :param point: Point in the parent frame
+        :type point: Vector3
         :return:
+        :rtype: Vector3
         """
         rot = self.get_rotation().conjugated()
         pos = self.get_position()
         return rot * (point - pos)
 
-    def align(self, my: Vector3, my_normal: Vector3, my_tangent: Vector3, at: Vector3,
-              at_normal: Vector3, at_tangent: Vector3, of, relative_to_child=True):
+    def align(self, my, my_normal, my_tangent, at,
+              at_normal, at_tangent, of, relative_to_child=True):
         """
         Rotates and translates this posable, such that the
         ends of the vectors `my` and `at` touch, aligning
@@ -217,14 +233,21 @@ class Posable(Element):
         merely means that they are already rotated with respect to their parent,
         not translated.
         :param my:
+        :type my: Vector3
         :param my_normal:
+        :type my_normal: Vector3
         :param my_tangent:
+        :type my_tangent: Vector3
         :param at:
+        :type at: Vector3
         :param at_normal:
+        :type at_normal: Vector3
         :param at_tangent:
+        :type at_tangent: Vector3
         :param of:
         :type of: Posable
         :param relative_to_child:
+        :type relative_to_child: bool
         :return:
         """
         if not vectors_orthogonal(my_normal, my_tangent):
@@ -324,14 +347,15 @@ class PosableGroup(Posable):
         :param kwargs:
         :return:
         """
-        super().__init__(name=name, **kwargs)
+        super(PosableGroup, self).__init__(name=name, **kwargs)
 
-    def set_position(self, position: Vector3):
+    def set_position(self, position):
         """
         Sets the position of this posable group, translating all the
         posables within it.
 
         :param position:
+        :type position: Vector3
         :return:
         """
         translation = position - self.get_position()
@@ -344,7 +368,7 @@ class PosableGroup(Posable):
             posable.translate(translation)
 
         # Store root position
-        super().set_position(position)
+        super(PosableGroup, self).set_position(position)
 
     def get_affected_posables(self):
         """
@@ -361,14 +385,15 @@ class PosableGroup(Posable):
         want it rendered
         :return:
         """
-        return [el for el in super().render_elements() if not isinstance(el, Pose)]
+        return [el for el in super(PosableGroup, self).render_elements() if not isinstance(el, Pose)]
 
-    def set_rotation(self, rotation: Quaternion):
+    def set_rotation(self, rotation):
         """
         Set the rotation of this posable group, moving all the posables
         within it accordingly.
 
         :param rotation:
+        :type rotation: Quaternion
         :return:
         """
         root_position = self.get_position()
@@ -397,4 +422,4 @@ class PosableGroup(Posable):
             posable.set_rotation(new_rotation)
 
         # We should still store our own root rotation
-        super().set_rotation(rotation)
+        super(PosableGroup, self).set_rotation(rotation)

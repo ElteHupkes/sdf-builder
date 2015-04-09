@@ -17,7 +17,7 @@ class Link(Posable):
         :param kwargs:
         :return:
         """
-        super().__init__(name=name, **kwargs)
+        super(Link, self).__init__(name=name, **kwargs)
 
         # Only create inertial if required
         """:type : Inertial"""
@@ -27,7 +27,7 @@ class Link(Posable):
         """
         :return:
         """
-        elements = super().render_elements()
+        elements = super(Link, self).render_elements()
         return elements if self.inertial is None else elements + [self.inertial]
 
     def ensure_inertial(self):

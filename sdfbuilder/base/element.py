@@ -4,7 +4,7 @@ Basic SDF builder element.
 from xml.sax.saxutils import quoteattr
 
 
-class Element:
+class Element(object):
     """
     Basic element class
     """

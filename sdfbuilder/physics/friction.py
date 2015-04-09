@@ -11,19 +11,20 @@ class Friction(Element):
 
     TAG_NAME = "friction"
 
-    def __init__(self, friction=None, friction2=None, fdir1: Vector3=None,
+    def __init__(self, friction=None, friction2=None, fdir1=None,
                  slip1=None, slip2=None, rolling_friction=None, **kwargs):
         """
 
         :param friction1:
         :param friction2:
         :param fdir1:
+        :type fdir1: Vector3
         :param slip1:
         :param slip2:
         :param rolling_friction:
         :return:
         """
-        super().__init__(**kwargs)
+        super(Friction, self).__init__(**kwargs)
 
         self.friction = friction
         self.friction2 = friction2
@@ -42,7 +43,7 @@ class Friction(Element):
         Add ODE / Bullet elements to the elements to render.
         :return:
         """
-        elements = super().render_elements()
+        elements = super(Friction, self).render_elements()
 
         ode = Element(tag_name="ode")
         ode.add_elements(self.ode_elements)
