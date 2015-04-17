@@ -216,6 +216,21 @@ class Posable(Element):
         pos = self.get_position()
         return rot * (point - pos)
 
+    def to_sibling_frame(self, point, sibling):
+        """
+        Takes a point and converts it to the frame of a sibling
+        :param point:
+        :type point: Vector3
+        :param sibling:
+        :type sibling: Posable
+        :return: The point in the sibling's frame
+        :rtype: Vector3
+        """
+        # Do this the easy way: convert to parent, then
+        # back to sibling
+        in_parent = self.to_parent_frame(point)
+        return sibling.to_local_frame(in_parent)
+
     def align(self, my, my_normal, my_tangent, at,
               at_normal, at_tangent, of, relative_to_child=True):
         """
