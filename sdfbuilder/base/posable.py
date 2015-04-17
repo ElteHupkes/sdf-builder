@@ -231,6 +231,19 @@ class Posable(Element):
         in_parent = self.to_parent_frame(point)
         return sibling.to_local_frame(in_parent)
 
+    def to_sibling_direction(self, vec, sibling):
+        """
+        Returns the given direction vector relative to the frame of a sibling
+        :param vec: Direction vector in the child frame
+        :type vec: Vector3
+        :param sibling: The sibling posable
+        :type sibling: Posable
+        :return:
+        :rtype: Vector3
+        """
+        in_parent = self.to_parent_direction(vec)
+        return sibling.to_local_direction(in_parent)
+
     def align(self, my, my_normal, my_tangent, at,
               at_normal, at_tangent, of, relative_to_child=True):
         """
