@@ -38,6 +38,9 @@ class Joint(Posable):
         self.child = child
         self.type = joint_type
 
+        if isinstance(axis, Vector3):
+            axis = Axis(axis=axis)
+
         self.axis = Axis() if axis is None else axis
 
     def render_elements(self):
