@@ -80,7 +80,7 @@ class Element(object):
         Returns the list of elements that should be rendered.
         :return:
         """
-        return self.elements.copy()
+        return self.elements[:]
 
     def render_body(self):
         """
