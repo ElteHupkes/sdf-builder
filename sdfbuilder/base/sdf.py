@@ -7,7 +7,7 @@ class SDF(Element):
     """
     TAG_NAME = "sdf"
 
-    def __init__(self, version="1.5", **kwargs):
+    def __init__(self, version="1.5", encoding=None, **kwargs):
         """
 
         :param version:
@@ -16,6 +16,7 @@ class SDF(Element):
         """
         super(SDF, self).__init__(**kwargs)
         self.version = version
+        self.encoding = encoding
 
     def render_attributes(self):
         """
@@ -32,4 +33,5 @@ class SDF(Element):
         :return:
         """
         body = super(SDF, self).render()
-        return "<?xml version=\"1.0\"?>\n"+body
+        enc = (' encoding="%s"' % self.encoding) if self.encoding else ""
+        return ("<?xml version=\"1.0\"%s?>\n" % enc)+body
