@@ -104,13 +104,11 @@ class Element(object):
         tag_name = self.TAG_NAME if self.tag_name is None else self.tag_name
 
         if tag_name is None:
-            templ = "%s"
+            return body
         else:
             attrs = " ".join([a+"="+quoteattr(all_attrs[a]) for a in all_attrs])
             tag_open = tag_name + " " + attrs if len(attrs) else tag_name
-            templ = "<%s>%s</%s>" % (tag_open, "%s", tag_name)
-
-        return templ % body
+            return "<%s />" % tag_open if len(body) == 0 else "<%s>%s</%s>" % (tag_open, "%s", tag_name)
 
     def __str__(self):
         """
