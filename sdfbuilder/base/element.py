@@ -2,7 +2,6 @@
 Basic SDF builder element.
 """
 from xml.sax.saxutils import quoteattr
-import numbers
 from ..util import number_format as nf
 
 
@@ -110,7 +109,7 @@ class Element(object):
         else:
             attrs = " ".join([a+"="+quoteattr(
                 # Use number format if a number is detected
-                nf(all_attrs[a]) if isinstance(all_attrs[a], numbers.Real) else str(all_attrs[a])
+                nf(all_attrs[a]) if isinstance(all_attrs[a], float) else str(all_attrs[a])
             ) for a in all_attrs])
             tag_open = tag_name + " " + attrs if len(attrs) else tag_name
             return "<%s />" % tag_open if len(body) == 0 else "<%s>%s</%s>" % (tag_open, body, tag_name)
