@@ -9,13 +9,14 @@ from ..physics.inertial import Inertial
 class Geometry(Element):
     TAG_NAME = 'geometry'
 
-    def get_inertial(self, mass):
+    def get_inertial(self, mass, **kwargs):
         """
         If implemented in the base class, returns an inertial corresponding to
         this simple shape. This inertial can then be used in a link.
 
         :param mass:
         :type mass: float
+        :param kwargs: Other arguments this method might require in subclasses
         :return:
         :rtype: Inertial
         """
@@ -50,7 +51,7 @@ class Box(Geometry):
         elements.append("<box><size>%s %s %s</size></box>" % (nf(x), nf(y), nf(z)))
         return elements
 
-    def get_inertial(self, mass):
+    def get_inertial(self, mass, **kwargs):
         """
         Return solid box inertial
         """
@@ -91,11 +92,21 @@ class Cylinder(Geometry):
                         % (nf(self.radius), nf(self.length)))
         return elements
 
-    def get_inertial(self, mass):
+    def get_inertial(self, mass, **kwargs):
         """
-        Return cylinder inertial
+        Return cylinder inertial. You can specify `tube=True` alongside
+        the radius of the center hole to get the inertia of a cylindrical tube.
         """
-        ixx = (3 * self.radius**2 + self.length**2) * mass / 12.0
+        tube = kwargs.get('tube', False)
+        if tube:
+            if 'r1' not in kwargs:
+                raise AttributeError("Tube inertia requires `r1` radius for cylinder.")
+
+            r = self.radius**2 + kwargs['r1']**2
+        else:
+            r = self.radius**2
+
+        ixx = (3 * r + self.length**2) * mass / 12.0
         izz = 0.5 * mass * self.radius**2
         return Inertial(mass=mass, ixx=ixx, iyy=ixx, izz=izz)
 
@@ -125,9 +136,11 @@ class Sphere(Geometry):
                         % nf(self.radius))
         return elements
 
-    def get_inertial(self, mass):
+    def get_inertial(self, mass, **kwargs):
         """
         Return cylinder inertial
         """
-        ixx = (2 * mass * self.radius**2) / 3.0
+        solid = kwargs.get('solid', True)
+        frac = 5.0 if solid else 3.0
+        ixx = (2 * mass * self.radius**2) / frac
         return Inertial(mass=mass, ixx=ixx, iyy=ixx, izz=ixx)
