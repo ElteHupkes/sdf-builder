@@ -107,7 +107,7 @@ class Cylinder(Geometry):
             r = self.radius**2
 
         ixx = (3 * r + self.length**2) * mass / 12.0
-        izz = 0.5 * mass * self.radius**2
+        izz = 0.5 * mass * r
         return Inertial(mass=mass, ixx=ixx, iyy=ixx, izz=izz)
 
 
