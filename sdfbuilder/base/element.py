@@ -108,7 +108,7 @@ class Element(object):
         else:
             attrs = " ".join([a+"="+quoteattr(all_attrs[a]) for a in all_attrs])
             tag_open = tag_name + " " + attrs if len(attrs) else tag_name
-            return "<%s />" % tag_open if len(body) == 0 else "<%s>%s</%s>" % (tag_open, "%s", tag_name)
+            return "<%s />" % tag_open if len(body) == 0 else "<%s>%s</%s>" % (tag_open, body, tag_name)
 
     def __str__(self):
         """
