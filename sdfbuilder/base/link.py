@@ -1,7 +1,7 @@
 from .posable import Posable
 from ..physics import Inertial
 from ..structure import Collision, Visual
-from ..structure.geometries import Box
+from ..structure.geometries import Geometry, Box, Cylinder, Sphere
 
 
 class Link(Posable):
@@ -41,7 +41,7 @@ class Link(Posable):
 
     def make_box(self, mass, x, y, z, collision=True, visual=True, inertia=True, name_prefix=""):
         """
-        Gives this link box properties.
+        Shortcut method to `make_geometry` with a box.
 
         :param mass:
         :param x:
@@ -53,19 +53,66 @@ class Link(Posable):
         :param name_prefix:
         :return: Newly created visual and collision elements, if applicable
         """
+        return self.make_geometry(Box(x, y, z), mass, collision=collision,
+                                  visual=visual, inertia=inertia, name_prefix=name_prefix)
+
+    def make_cylinder(self, mass, radius, length, collision=True, visual=True, inertia=True, name_prefix=""):
+        """
+        Shortcut method to `make_geometry` with a cylinder.
+        :param mass:
+        :param radius:
+        :param length:
+        :param collision:
+        :param visual:
+        :param inertia:
+        :param name_prefix:
+        :return:
+        """
+        return self.make_geometry(Cylinder(radius, length), mass=mass, collision=collision,
+                                  visual=visual, inertia=inertia, name_prefix=name_prefix)
+
+    def make_sphere(self, mass, radius, collision=True, visual=True, inertia=True, name_prefix=""):
+        """
+        Shortcut method to `make_geometry` with a cylinder.
+        :param mass:
+        :param radius:
+        :param collision:
+        :param visual:
+        :param inertia:
+        :param name_prefix:
+        :return:
+        """
+        return self.make_geometry(Sphere(radius), mass=mass, collision=collision,
+                                  visual=visual, inertia=inertia, name_prefix=name_prefix)
+
+    def make_geometry(self, geometry, mass=1.0, collision=True, visual=True, inertia=True, name_prefix=""):
+        """
+        :param geometry:
+        :type geometry: Geometry
+        :param mass:
+        :type mass: float
+        :param collision: Add a box collision
+        :type collision: bool
+        :param visual: Add a box visual
+        :type visual: bool
+        :param inertia: Set box inertia
+        :type inertia: bool
+        :param name_prefix: Prefix for element names (before "visual" / "collision")
+        :type name_prefix: str
+        :return:
+        """
         return_value = []
 
         if inertia:
-            self.ensure_inertial()
-            self.inertial.set_box(mass, x, y, z)
+            self.inertial = geometry.get_inertial(mass)
 
         if collision:
-            col = Collision(name=name_prefix+"collision", geometry=Box(x, y, z))
+            col = Collision(name=name_prefix+"collision", geometry=geometry)
             return_value.append(col)
             self.add_element(col)
 
         if visual:
-            vis = Visual(name=name_prefix+"visual", geometry=Box(x, y, z))
+            vis = Visual(name=name_prefix+"visual", geometry=geometry)
             return_value.append(vis)
             self.add_element(vis)
 

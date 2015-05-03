@@ -8,48 +8,27 @@ class Inertial(Element):
     """
     TAG_NAME = 'inertial'
 
-    def __init__(self, **kwargs):
+    def __init__(self, mass=1.0, ixx=0, iyy=0, izz=0, ixy=0, ixz=0, iyz=0, **kwargs):
         """
-
+        :param mass:
+        :param ixx:
+        :param iyy:
+        :param izz:
+        :param ixy:
+        :param ixz:
+        :param iyz:
         :param kwargs:
-        :return:
         """
         super(Inertial, self).__init__(**kwargs)
 
-        self.ixx, self.ixy, self.ixz = 1, 0, 0
-        self.iyy, self.iyz = 1, 0
-        self.izz = 1
-
-        self.mass = 1.0
-
-    def set_box(self, mass, x, y, z):
-        """
-        Set inertial box properties
-        :param mass:
-        :param x:
-        :param y:
-        :param z:
-        :return:
-        """
-        r = mass / 12.0
-        self.ixy = self.ixz = self.iyz = 0
-
-        self.ixx = r * (y**2 + z**2)
-        self.iyy = r * (x**2 + z**2)
-        self.izz = r * (x**2 + y**2)
-
-    def set_cylinder(self, mass, radius, height):
-        """
-        :param mass:
-        :param radius:
-        :param height:
-        :return:
-        """
-        raise NotImplementedError("This method is not yet implemented.")
+        self.ixx, self.ixy, self.ixz = (ixx, ixy, ixz)
+        self.iyy, self.iyz = (iyy, iyz)
+        self.izz = izz
+        self.mass = mass
 
     def render_body(self):
         """
-
+        Adds inertia to body before render.
         :return:
         """
         body = super(Inertial, self).render_body()
