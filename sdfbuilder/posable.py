@@ -45,7 +45,7 @@ class Pose(Element):
 
         roll = atan2(2 * (y*z + w*x), squ - sqx - sqy + sqz)
 
-        sarg = -2 * (x*z - w * y)
+        sarg = -2 * (x*z - w*y)
         if sarg <= -1.0:
             pitch = -0.5 * pi
         elif sarg >= 1.0:
