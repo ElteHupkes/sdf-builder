@@ -1,4 +1,4 @@
-from ..base.posable import Posable
+from ..posable import Posable
 
 
 class Sensor(Posable):

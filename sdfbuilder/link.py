@@ -1,7 +1,7 @@
 from .posable import Posable
-from ..physics import Inertial
-from ..structure import Collision, Visual
-from ..structure.geometries import Geometry, Box, Cylinder, Sphere
+from .physics import Inertial
+from .structure import Collision, Visual
+from .structure.geometries import Geometry, Box, Cylinder, Sphere
 
 
 class Link(Posable):

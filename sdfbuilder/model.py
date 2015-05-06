@@ -1,5 +1,5 @@
 from .posable import Posable
-from ..joint import Joint
+from .joint import Joint
 
 
 class Model(Posable):

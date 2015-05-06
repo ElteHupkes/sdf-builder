@@ -1,7 +1,7 @@
 """
 Collision / visual and geometry like classes
 """
-from ..base.posable import Posable
+from ..posable import Posable
 
 
 class Structure(Posable):

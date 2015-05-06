@@ -2,7 +2,7 @@
 Basic SDF builder element.
 """
 from xml.sax.saxutils import quoteattr
-from ..util import number_format as nf
+from .util import number_format as nf
 
 
 class Element(object):

@@ -2,8 +2,9 @@
 Tests a relatively complex align feature
 """
 import unittest
-from ..base import Link, PosableGroup
-from ..math import Vector3
+from sdfbuilder.link import Link
+from sdfbuilder.posable import PosableGroup
+from sdfbuilder.math import Vector3
 from math import pi, sqrt
 
 

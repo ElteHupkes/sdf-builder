@@ -1,7 +1,7 @@
 """
 Simple geometries such as box, cylinder and sphere.
 """
-from ..base.element import Element
+from ..element import Element
 from ..util import number_format as nf
 from ..physics.inertial import Inertial
 

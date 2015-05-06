@@ -1,6 +1,6 @@
-from ..base.link import Link
-from ..base.posable import Posable
-from ..base.element import Element
+from ..link import Link
+from ..posable import Posable
+from ..element import Element
 from ..math import Vector3
 from ..util import number_format as nf
 

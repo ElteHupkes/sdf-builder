@@ -1,10 +1,12 @@
 from __future__ import print_function
+from __future__ import absolute_import
+import sys
+
 from math import atan2, asin, pi
 from .element import Element
-from ..math import Vector3, Quaternion, RotationMatrix
-from ..math import vectors_orthogonal, vectors_parallel
-from ..util import number_format as nf
-import sys
+from .math import Vector3, Quaternion, RotationMatrix
+from .math import vectors_orthogonal, vectors_parallel
+from .util import number_format as nf
 
 
 class Pose(Element):

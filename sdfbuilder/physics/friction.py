@@ -1,4 +1,4 @@
-from ..base.element import Element
+from ..element import Element
 from ..util import number_format as nf
 from ..math import Vector3
 
