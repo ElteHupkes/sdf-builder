@@ -3,8 +3,8 @@ Vector, Quaternion and rotation matrices used
 in the sdf-builder. This is powered by a fork
 of pyeuclid found at https://github.com/ezag/pyeuclid
 """
-from .euclid import Vector3, Quaternion
-from .euclid import Matrix4 as RotationMatrix
+from .euclid import Vector3, Quaternion, Matrix4 as RotationMatrix
+from .transformations import euler_from_quaternion
 
 # Epsilon value used for zero comparisons
 EPSILON = 1e-5

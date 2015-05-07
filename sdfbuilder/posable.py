@@ -1,10 +1,8 @@
 from __future__ import print_function
 from __future__ import absolute_import
 import sys
-
-from math import atan2, asin, pi
 from .element import Element
-from .math import Vector3, Quaternion, RotationMatrix
+from .math import Vector3, Quaternion, RotationMatrix, euler_from_quaternion
 from .math import vectors_orthogonal, vectors_parallel
 from .util import number_format as nf
 
@@ -36,25 +34,8 @@ class Pose(Element):
         # I've taken the liberty to do it myself here inspired
         # by how Gazebo does it
         r = self.rotation
-        w, x, y, z = r.w, r.x, r.y, r.z
-
-        squ = w**2
-        sqx = x**2
-        sqy = y**2
-        sqz = z**2
-
-        roll = atan2(2 * (y*z + w*x), squ - sqx - sqy + sqz)
-
-        sarg = -2 * (x*z - w*y)
-        if sarg <= -1.0:
-            pitch = -0.5 * pi
-        elif sarg >= 1.0:
-            pitch = 0.5 * pi
-        else:
-            pitch = asin(sarg)
-
-        yaw = atan2(2 * (x*y + w*z), squ + sqx - sqy - sqz)
-        return roll, pitch, yaw
+        quat = [r.w, r.x, r.y, r.z]
+        return euler_from_quaternion(quat, 'sxyz')
 
     def render_body(self):
         """
