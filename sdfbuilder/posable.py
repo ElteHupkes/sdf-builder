@@ -2,8 +2,7 @@ from __future__ import print_function
 from __future__ import absolute_import
 import sys
 from .element import Element
-from .math import Vector3, Quaternion, RotationMatrix, euler_from_quaternion
-from .math import vectors_orthogonal, vectors_parallel
+from .math import Vector3, Quaternion, RotationMatrix
 from .util import number_format as nf
 
 
@@ -24,25 +23,12 @@ class Pose(Element):
         self.position = Vector3()
         self.rotation = Quaternion()
 
-    def euler_rotation(self):
-        """
-        Returns roll, pitch, yaw from the
-        rotation Quaternion.
-        """
-        # Quaternion.get_euler() does not correspond to what
-        # the values we expect for roll, pitch, yaw, so instead
-        # I've taken the liberty to do it myself here inspired
-        # by how Gazebo does it
-        r = self.rotation
-        quat = [r.w, r.x, r.y, r.z]
-        return euler_from_quaternion(quat, 'sxyz')
-
     def render_body(self):
         """
         :return:
         """
         body = super(Pose, self).render_body()
-        roll, pitch, yaw = self.euler_rotation()
+        roll, pitch, yaw = self.rotation.get_rpy()
         x, y, z = self.position.x, self.position.y, self.position.z
 
         body += "%s %s %s %s %s %s" % (nf(x), nf(y), nf(z),
@@ -153,7 +139,7 @@ class Posable(Element):
         if relative_to_child:
             axis = self.to_parent_direction(axis)
 
-        quat = Quaternion.new_rotate_axis(angle, axis)
+        quat = Quaternion.from_angle_axis(angle, axis)
         self.rotate(quat)
 
     def to_parent_direction(self, vec):
@@ -261,10 +247,10 @@ class Posable(Element):
         :type relative_to_child: bool
         :return:
         """
-        if not vectors_orthogonal(my_normal, my_tangent):
+        if not my_normal.orthogonal_to(my_tangent):
             raise ValueError("`my_normal` and `my_tangent` should be orthogonal.")
 
-        if not vectors_orthogonal(at_normal, at_tangent):
+        if not at_normal.orthogonal_to(at_tangent):
             raise ValueError("`at_normal` and `at_tangent` should be orthogonal.")
 
         # Convert all vectors to local frame if not currently there,
@@ -305,9 +291,9 @@ class Posable(Element):
 
         # Warning: `RotationMatrix` is a Matrix4 that can potentially
         # do translations. We want to assign the first block of
-        # these matrices only. Assignment happens by columns.
-        r1[0:3], r1[4:7], r1[8:11] = my_x, my_y, my_z
-        r2[0:3], r2[4:7], r2[8:11] = at_x, at_y, at_z
+        # these matrices only. Syntax is numpy arrays.
+        r1[:3, 0], r1[:3, 1], r1[:3, 2] = my_x, my_y, my_z
+        r2[:3, 0], r2[:3, 1], r2[:3, 2] = at_x, at_y, at_z
 
         # The columns of r1 are orthonormal, so we can simply
         # transpose the matrix to get the inverse rotation
@@ -321,13 +307,13 @@ class Posable(Element):
 
         my_parent_normal = self.to_parent_direction(my_normal)
         at_parent_normal = of.to_parent_direction(-at_normal)
-        if not vectors_parallel(my_parent_normal, at_parent_normal):
+        if not my_parent_normal.parallel_to(at_parent_normal):
             print("Vector angle: %f" % my_parent_normal.angle(at_parent_normal), file=sys.stderr)
             assert False, "Normal vectors failed to align!"
 
         parent_tangent = self.to_parent_direction(my_tangent)
         at_parent_tangent = of.to_parent_direction(at_tangent)
-        if not vectors_parallel(parent_tangent, at_parent_tangent):
+        if not parent_tangent.parallel_to(at_parent_tangent):
             print("Vector angle: %f" % parent_tangent.angle(at_parent_tangent), file=sys.stderr)
             assert False, "Tangent vectors failed to align!"
 
