@@ -1,6 +1,5 @@
 """
-Vector, Quaternion and rotation matrices used
-in the sdf-builder. This is powered by a fork
-of pyeuclid found at https://github.com/ezag/pyeuclid
+Vector, Quaternion and RotationMatrix classes written as
+wrappers over `transformations.py` (see that file for license/origin).
 """
 from .classes import Vector3, Quaternion, RotationMatrix
