@@ -7,6 +7,6 @@ setup(name='sdfbuilder',
       author='Elte Hupkes',
       author_email='elte@hupkes.org',
       url='https://github.com/ElteHupkes/sdf-builder',
-      packages=['sdfbuilder', 'sdfbuilder.base', 'sdfbuilder.joint', 'sdfbuilder.math',
+      packages=['sdfbuilder', 'sdfbuilder.joint', 'sdfbuilder.sensor', 'sdfbuilder.math',
                 'sdfbuilder.physics', 'sdfbuilder.structure', 'sdfbuilder.util'],
       requires=['numpy'])
