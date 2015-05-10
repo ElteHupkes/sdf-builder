@@ -1,1 +1,1 @@
-from .structure import Visual, Collision
+from .structure import Visual, Collision, Material

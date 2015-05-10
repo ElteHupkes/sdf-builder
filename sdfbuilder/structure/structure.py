@@ -2,6 +2,7 @@
 Collision / visual and geometry like classes
 """
 from ..posable import Posable
+from ..element import Element
 
 
 class Structure(Posable):
@@ -33,3 +34,32 @@ class Collision(Structure):
 
 class Visual(Structure):
     TAG_NAME = 'visual'
+
+    def add_color_script(self, color):
+        """
+        Adds a new Material element to this Visual that has a color
+        script for the given color.
+        :param color: One of Gazebo's supported colors, see
+        `https://bitbucket.org/osrf/gazebo/src/52abccccfec20a5f96da9dc0aeda830b48a66269/media/materials/scripts/gazebo.material?at=default`
+        :return:
+        """
+        if color.index('/') < 0:
+            color = "Gazebo/"+color.title()
+
+        self.add_element(Material(body="<script><name>%s</name></script>" % color))
+
+    def add_color(self, r, g, b, a=1):
+        """
+        Simple color setter that adds a `Material` element with the
+        ambient / diffuse values at the given r,g,b,a values and
+        specular set to (0.1, 0.1, 0.1, a).
+        :return:
+        """
+        color = '%.2f %.2f %.2f %.2f' % (r, g, b, a)
+        specular = '0.1 0.1 0.1 %.2f' % a
+        self.add_element(Material(body="<ambient>%s</ambient><diffuse>%s</diffuse><specular>%s</specular>" %
+                                       (color, color, specular)))
+
+
+class Material(Element):
+    TAG_NAME = 'material'

@@ -39,6 +39,28 @@ class Link(Posable):
         if self.inertial is None:
             self.inertial = Inertial()
 
+    def make_color_script(self, color):
+        """
+        Applies `add_color_script` with the given color to all visuals in this link.
+        :param color:
+        :type color: str
+        :return:
+        """
+        for visual in self.get_elements_of_type(Visual):
+            visual.add_color_script(color)
+
+    def make_color(self, r, g, b, a):
+        """
+        Applies `add_color` with the given values to all visuals in this link.
+        :param r:
+        :param g:
+        :param b:
+        :param a:
+        :return:
+        """
+        for visual in self.get_elements_of_type(Visual):
+            visual.add_color(r, g, b, a)
+
     def make_box(self, mass, x, y, z, collision=True, visual=True, inertia=True, name_prefix=""):
         """
         Shortcut method to `make_geometry` with a box.

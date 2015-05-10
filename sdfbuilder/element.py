@@ -23,15 +23,14 @@ class Element(object):
         :param tag_name: Can be used to dynamically add a tag name different
                          from the class tag name.
         :param attributes: The element attributes
+        :param elements: Initial list of sub-elements
+        :param body: Element body
         :return:
         """
-        self.attributes = kwargs["attributes"] if "attributes" in kwargs else {}
-        self.tag_name = kwargs["tag_name"] if "tag_name" in kwargs else None
-        self.body = kwargs["body"] if "body" in kwargs else ""
-
-        # Array of sub-elements, each of these elements
-        # is converted
-        self.elements = []
+        self.attributes = kwargs.get("attributes", {})
+        self.tag_name = kwargs.get("tag_name", None)
+        self.body = kwargs.get("body", "")
+        self.elements = kwargs.get("elements", [])
 
     def add_element(self, element):
         """
@@ -56,15 +55,25 @@ class Element(object):
         :param class_type:
         :return:
         """
-        return len(self.get_elements(class_type)) > 0
+        return len(self.get_elements_of_type(class_type)) > 0
 
-    def get_elements(self, class_type):
+    def filter_elements(self, func):
         """
         Returns all elements of the given class type
-        :param class_type:
+        :param func: Selector function or class instance
         :return:
         """
-        return [el for el in self.elements if isinstance(el, class_type)]
+        return [el for el in self.elements if func(el)]
+
+    def get_elements_of_type(self, obj):
+        """
+        Returns all direct child elements of the
+        given class type.
+        :param obj:
+        :return:
+        """
+        func = lambda element: isinstance(element, obj)
+        return self.filter_elements(func)
 
     def render_attributes(self):
         """
