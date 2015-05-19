@@ -1,4 +1,5 @@
 from .posable import Posable
+from .element import Element
 from .physics import Inertial
 from .structure import Collision, Visual
 from .structure.geometries import Geometry, Box, Cylinder, Sphere
@@ -20,15 +21,24 @@ class Link(Posable):
         super(Link, self).__init__(name=name, **kwargs)
 
         # Only create inertial if required
+        self.inertial = kwargs.get("inertial", None)
         """:type : Inertial"""
-        self.inertial = None
+
+        self.self_collide = kwargs.get("self_collide", None)
 
     def render_elements(self):
         """
         :return:
         """
         elements = super(Link, self).render_elements()
-        return elements if self.inertial is None else elements + [self.inertial]
+
+        if self.inertial is not None:
+            elements.append(self.inertial)
+
+        if self.self_collide is not None:
+            elements.append(Element(tag_name="self_collide", body=str(self.self_collide)))
+
+        return elements
 
     def ensure_inertial(self):
         """
