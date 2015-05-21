@@ -57,23 +57,35 @@ class Element(object):
         """
         return len(self.get_elements_of_type(class_type)) > 0
 
-    def filter_elements(self, func):
+    def filter_elements(self, func, recursive=False):
         """
         Returns all elements of the given class type
         :param func: Selector function or class instance
+        :param recursive: Search recursively
         :return:
+        :rtype: list
         """
-        return [el for el in self.elements if func(el)]
+        elements = []
 
-    def get_elements_of_type(self, obj):
+        for el in self.elements:
+            if func(el):
+                elements.append(el)
+
+            if recursive:
+                elements += el.filter_elements(func)
+
+        return elements
+
+    def get_elements_of_type(self, obj, recursive=False):
         """
         Returns all direct child elements of the
         given class type.
         :param obj:
+        :param recursive: Search recursively
         :return:
         """
         func = lambda element: isinstance(element, obj)
-        return self.filter_elements(func)
+        return self.filter_elements(func, recursive=recursive)
 
     def render_attributes(self):
         """
