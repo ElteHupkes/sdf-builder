@@ -1,6 +1,6 @@
 import numpy as np
 from .transformations import quaternion_multiply, quaternion_matrix, quaternion_from_matrix, euler_from_quaternion, \
-    quaternion_about_axis, quaternion_conjugate, quaternion_inverse
+    quaternion_about_axis, quaternion_conjugate, quaternion_inverse, quaternion_from_euler
 import itertools
 
 # Epsilon value used for zero comparisons
@@ -329,6 +329,19 @@ class Quaternion(VectorBase):
         """
         return Quaternion(quaternion_about_axis(angle, axis))
 
+    @staticmethod
+    def from_rpy(roll, pitch, yaw):
+        """
+        Creates a quaternion from Gazebo roll, pitch, yaw values.
+        :param roll:
+        :type roll: float
+        :param pitch:
+        :type pitch: float
+        :param yaw:
+        :type yaw: float
+        :return:
+        """
+        return Quaternion(quaternion_from_euler(roll, pitch, yaw, 'sxyz'))
 
 class RotationMatrix(object):
     """
