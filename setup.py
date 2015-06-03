@@ -9,4 +9,4 @@ setup(name='sdfbuilder',
       url='https://github.com/ElteHupkes/sdf-builder',
       packages=['sdfbuilder', 'sdfbuilder.joint', 'sdfbuilder.sensor', 'sdfbuilder.math',
                 'sdfbuilder.physics', 'sdfbuilder.structure', 'sdfbuilder.util'],
-      requires=['numpy'])
+      install_requires=['numpy'])
