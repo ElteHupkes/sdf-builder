@@ -126,14 +126,17 @@ class Posable(Element):
         """
         return [self.pose] + super(Posable, self).render_elements()
 
-    def rotate_around(self, axis, angle, relative_to_child=False):
+    def rotate_around(self, axis, angle, relative_to_child=True):
         """
         Rotates this posable `angle` degrees around the given
         directional vector.
         :param axis:
         :type axis: Vector3
         :param angle:
-        :param relative_to_child:
+        :type angle: float
+        :param relative_to_child: If true, the axis is expressed in the
+                                  child frame.
+        :type relative_to_child: bool
         :return:
         """
         if relative_to_child:
