@@ -53,6 +53,10 @@ class Posable(Element):
     def __init__(self, name, pose=None, **kwargs):
         """
         :param name:
+        :type name: str
+        :param pose: Initial pose, origin with zero rotation
+                     if not specified.
+        :type pose: Pose
         :param kwargs:
         :return:
         """
@@ -339,15 +343,18 @@ class PosableGroup(Posable):
     # We don't want to render outer posable group
     TAG_NAME = None
 
-    def __init__(self, name=None, **kwargs):
+    def __init__(self, name=None, pose=None, **kwargs):
         """
         Overrides init to make name optional, it is not useful
         for posable groups.
         :param name:
+        :type name: str
+        :param pose:
+        :type pose: Pose
         :param kwargs:
         :return:
         """
-        super(PosableGroup, self).__init__(name=name, **kwargs)
+        super(PosableGroup, self).__init__(name=name, pose=pose, **kwargs)
 
     def set_position(self, position):
         """
