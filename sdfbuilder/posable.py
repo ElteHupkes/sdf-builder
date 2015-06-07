@@ -53,6 +53,10 @@ class Posable(Element):
     def __init__(self, name, pose=None, **kwargs):
         """
         :param name:
+        :type name: str
+        :param pose: Initial pose, origin with zero rotation
+                     if not specified.
+        :type pose: Pose
         :param kwargs:
         :return:
         """
@@ -126,14 +130,17 @@ class Posable(Element):
         """
         return [self.pose] + super(Posable, self).render_elements()
 
-    def rotate_around(self, axis, angle, relative_to_child=False):
+    def rotate_around(self, axis, angle, relative_to_child=True):
         """
         Rotates this posable `angle` degrees around the given
         directional vector.
         :param axis:
         :type axis: Vector3
         :param angle:
-        :param relative_to_child:
+        :type angle: float
+        :param relative_to_child: If true, the axis is expressed in the
+                                  child frame.
+        :type relative_to_child: bool
         :return:
         """
         if relative_to_child:
@@ -336,15 +343,18 @@ class PosableGroup(Posable):
     # We don't want to render outer posable group
     TAG_NAME = None
 
-    def __init__(self, name=None, **kwargs):
+    def __init__(self, name=None, pose=None, **kwargs):
         """
         Overrides init to make name optional, it is not useful
         for posable groups.
         :param name:
+        :type name: str
+        :param pose:
+        :type pose: Pose
         :param kwargs:
         :return:
         """
-        super(PosableGroup, self).__init__(name=name, **kwargs)
+        super(PosableGroup, self).__init__(name=name, pose=pose, **kwargs)
 
     def set_position(self, position):
         """
