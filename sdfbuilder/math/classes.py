@@ -140,7 +140,7 @@ class Vector3(VectorBase):
         """
         :return:
         """
-        return 'Vector3(%.2f, %.2f, %.2f)' % self.data
+        return 'Vector3(%.2f, %.2f, %.2f)' % tuple(self)
 
     def __add__(self, other):
         """
@@ -265,7 +265,7 @@ class Quaternion(VectorBase):
         """
         :return:
         """
-        return 'Quaternion(real=%.2f, imag=<%.2f, %.2f, %.2f>)' % self
+        return 'Quaternion(real=%.2f, imag=<%.2f, %.2f, %.2f>)' % tuple(self)
 
     def __mul__(self, other):
         """
