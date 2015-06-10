@@ -78,6 +78,7 @@ class Posable(Element):
         """
         Return the rotation quaternion of this posable's pose
         :return:
+        :rtype: Quaternion
         """
         return self.pose.rotation.copy()
 
@@ -93,6 +94,7 @@ class Posable(Element):
         """
         Return the 3-vector position of this posable's pose
         :return:
+        :rtype: Vector3
         """
         return self.pose.position.copy()
 
