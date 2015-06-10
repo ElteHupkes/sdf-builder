@@ -11,4 +11,4 @@ def number_format(number):
     :param number:
     :return: String representation of the number
     """
-    return str(number)
+    return "%e" % number
