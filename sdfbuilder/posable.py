@@ -79,7 +79,7 @@ class Posable(Element):
         Return the rotation quaternion of this posable's pose
         :return:
         """
-        return self.pose.rotation
+        return self.pose.rotation.copy()
 
     def set_position(self, position):
         """
