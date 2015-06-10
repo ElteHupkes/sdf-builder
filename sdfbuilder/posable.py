@@ -94,7 +94,7 @@ class Posable(Element):
         Return the 3-vector position of this posable's pose
         :return:
         """
-        return self.pose.position
+        return self.pose.position.copy()
 
     def translate(self, translation):
         """
