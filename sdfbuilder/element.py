@@ -72,7 +72,7 @@ class Element(object):
                 elements.append(el)
 
             if recursive and hasattr(el, 'filter_elements') and callable(el.filter_elements):
-                elements += el.filter_elements(func)
+                elements += el.filter_elements(func, recursive=recursive)
 
         return elements
 
