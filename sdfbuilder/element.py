@@ -71,7 +71,7 @@ class Element(object):
             if func(el):
                 elements.append(el)
 
-            if recursive:
+            if recursive and hasattr(el, 'filter_elements') and callable(el.filter_elements):
                 elements += el.filter_elements(func)
 
         return elements
@@ -82,10 +82,41 @@ class Element(object):
         given class type.
         :param obj:
         :param recursive: Search recursively
-        :return:
+        :return: Elements matching the given type
         """
         func = lambda element: isinstance(element, obj)
         return self.filter_elements(func, recursive=recursive)
+
+    def remove_elements(self, func, recursive=False):
+        """
+        Removes all elements that match the given filter function.
+        :param func: Selector function or class instance
+        :param recursive: Remove recursively from child elements
+        :return: List of all removed elements
+        :rtype: list
+        """
+        to_remove = self.filter_elements(func)
+        for el in to_remove:
+            self.elements.remove(el)
+
+        if not recursive:
+            return to_remove
+
+        for el in self.elements:
+            if hasattr(el, 'remove_elements') and callable(el.remove_elements):
+                to_remove += el.remove_elements(func, recursive)
+
+        return to_remove
+
+    def remove_elements_of_type(self, obj, recursive=False):
+        """
+        Removes all elements matching the given type.
+        :param obj:
+        :param recursive:
+        :return:
+        """
+        func = lambda element: isinstance(element, obj)
+        return self.remove_elements(func, recursive)
 
     def render_attributes(self):
         """
