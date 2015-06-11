@@ -140,7 +140,7 @@ class Vector3(VectorBase):
         """
         :return:
         """
-        return 'Vector3(%.2f, %.2f, %.2f)' % tuple(self)
+        return 'Vector3(%e, %e, %e)' % tuple(self)
 
     def __add__(self, other):
         """
@@ -265,7 +265,7 @@ class Quaternion(VectorBase):
         """
         :return:
         """
-        return 'Quaternion(real=%.2f, imag=<%.2f, %.2f, %.2f>)' % tuple(self)
+        return 'Quaternion(real=%e, imag=<%e, %e, %e>)' % tuple(self)
 
     def __mul__(self, other):
         """
@@ -343,6 +343,7 @@ class Quaternion(VectorBase):
         """
         return Quaternion(quaternion_from_euler(roll, pitch, yaw, 'sxyz'))
 
+
 class RotationMatrix(object):
     """
     Rotation matrix class
@@ -373,6 +374,12 @@ class RotationMatrix(object):
         return self.__class__(self.data)
 
     copy = __copy__
+
+    def __repr__(self):
+        """
+        :return:
+        """
+        return str(self.data[:3, :3])
 
     def __getitem__(self, item):
         """
