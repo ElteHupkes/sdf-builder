@@ -1504,7 +1504,7 @@ def random_rotation_matrix(rand=None):
 
 
 # epsilon for testing whether a number is close to zero
-_EPS = numpy.finfo(float).eps * 4.0
+_EPS = numpy.finfo(float).eps * 40.0
 
 # axis sequences for Euler angles
 _NEXT_AXIS = [1, 2, 0, 1]
