@@ -18,8 +18,24 @@ class Structure(Posable):
         """
         super(Structure, self).__init__(name, **kwargs)
 
-        """:type : Geometry"""
+        # Only the geometry of a structure has a pose
+        self._pose = None
+
         self.geometry = geometry
+        """:type : Geometry"""
+
+    # Delegate all position and rotation calls to the geometry object
+    def set_position(self, position):
+        self.geometry.set_position(position)
+
+    def set_rotation(self, rotation):
+        self.geometry.set_rotation(rotation)
+
+    def get_position(self):
+        return self.geometry.get_position()
+
+    def get_rotation(self):
+        return self.geometry.get_rotation()
 
     def render_elements(self):
         """

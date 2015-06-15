@@ -51,7 +51,7 @@ class TestPosable(unittest.TestCase):
         # say this functions as a regression test.
 
         # First, the position of the first link.
-        roll, pitch, yaw = link.pose.rotation.get_rpy()
+        roll, pitch, yaw = link.get_rotation().get_rpy()
         x, y, z = link.get_position()
         self.assertAlmostEqual(x, 2.776709, msg="Incorrect x position.")
         self.assertAlmostEqual(y, -0.1100423, msg="Incorrect y position.")
@@ -61,7 +61,7 @@ class TestPosable(unittest.TestCase):
         self.assertAlmostEqual(yaw, 2.8797932657906435, msg="Incorrect yaw.")
 
         # Now, position of the minibox
-        roll, pitch, yaw = minibox.pose.rotation.get_rpy()
+        roll, pitch, yaw = minibox.get_rotation().get_rpy()
         x, y, z = minibox.get_position()
         self.assertAlmostEqual(x, 4.655811238272279, msg="Incorrect x position.")
         self.assertAlmostEqual(y, 1.291709623134523, msg="Incorrect y position.")
@@ -71,7 +71,7 @@ class TestPosable(unittest.TestCase):
         self.assertAlmostEqual(yaw, 1.0364317772632718, msg="Incorrect yaw.")
 
         # Finally, position of link2
-        roll, pitch, yaw = link2.pose.rotation.get_rpy()
+        roll, pitch, yaw = link2.get_rotation().get_rpy()
         x, y, z = link2.get_position()
         self.assertAlmostEqual(x, 0.5, msg="Incorrect x position.")
         self.assertAlmostEqual(y, 0.5, msg="Incorrect y position.")

@@ -1,3 +1,4 @@
+from __future__ import division
 import numpy as np
 from .transformations import quaternion_multiply, quaternion_matrix, quaternion_from_matrix, euler_from_quaternion, \
     quaternion_about_axis, quaternion_conjugate, quaternion_inverse, quaternion_from_euler
@@ -126,9 +127,11 @@ class Vector3(VectorBase):
     def __init__(self, x=0, y=0, z=0):
         """
         :param x:
-        :type x: int|iterable
+        :type x: float|iterable
         :param y:
+        :type y: float
         :param z:
+        :type z: float
         :return:
         """
         if hasattr(x, '__iter__'):
@@ -169,6 +172,7 @@ class Vector3(VectorBase):
         self[0] += other[0]
         self[1] += other[1]
         self[2] += other[2]
+        return self
 
     def __isub__(self, other):
         """
@@ -178,6 +182,44 @@ class Vector3(VectorBase):
         self[0] -= other[0]
         self[1] -= other[1]
         self[2] -= other[2]
+
+    def __mul__(self, number):
+        """
+        :param number:
+        :type number: float
+        :return:
+        """
+        return Vector3(self[0] * number, self[1] * number, self[2] * number)
+
+    def __imul__(self, number):
+        """
+        :param number:
+        :type number: float
+        :return:
+        """
+        self[0] *= number
+        self[1] *= number
+        self[2] *= number
+        return self
+
+    def __div__(self, number):
+        """
+        :param number:
+        :type number: float
+        :return:
+        """
+        return self.__mul__(1.0 / number)
+
+    def __idiv__(self, number):
+        """
+        :param number:
+        :type number: float
+        :return:
+        """
+        return self.__imul__(1.0 / number)
+
+    __rmul__ = __mul__
+    __truediv__ = __div__
 
     def cross(self, v1):
         """

@@ -50,6 +50,11 @@ class Posable(Element):
     # element with transformations.
     PARENT_FRAME = True
 
+    # It might be desirable to have posable functionality without
+    # rendering a pose tag (in a compound geometry for instance).
+    # In this case, set this to false in subclasses.
+    RENDER_POSE = True
+
     def __init__(self, name, pose=None, **kwargs):
         """
         :param name:
@@ -62,7 +67,7 @@ class Posable(Element):
         """
         super(Posable, self).__init__(**kwargs)
 
-        self.pose = Pose() if pose is None else pose
+        self._pose = Pose() if pose is None else pose
         self.name = name
 
     def set_rotation(self, rotation):
@@ -72,7 +77,7 @@ class Posable(Element):
         :return:
 
         """
-        self.pose.rotation = rotation.copy()
+        self._pose.rotation = rotation.copy()
 
     def get_rotation(self):
         """
@@ -80,7 +85,7 @@ class Posable(Element):
         :return:
         :rtype: Quaternion
         """
-        return self.pose.rotation.copy()
+        return self._pose.rotation.copy()
 
     def set_position(self, position):
         """
@@ -88,7 +93,7 @@ class Posable(Element):
         :param position:
         :return:
         """
-        self.pose.position = position.copy()
+        self._pose.position = position.copy()
 
     def get_position(self):
         """
@@ -96,7 +101,7 @@ class Posable(Element):
         :return:
         :rtype: Vector3
         """
-        return self.pose.position.copy()
+        return self._pose.position.copy()
 
     def translate(self, translation):
         """
@@ -121,16 +126,20 @@ class Posable(Element):
         :rtype: dict
         """
         attrs = super(Posable, self).render_attributes()
-        attrs.update({"name": self.name})
+
+        if self.name is not None:
+            attrs.update({"name": self.name})
+
         return attrs
 
     def render_elements(self):
         """
-        Adds pose to the render elements
+        Adds _pose to the render elements
         :return:
         :rtype: list
         """
-        return [self.pose] + super(Posable, self).render_elements()
+        elmns = [self._pose] if self.RENDER_POSE and self._pose else []
+        return elmns + super(Posable, self).render_elements()
 
     def rotate_around(self, axis, angle, relative_to_child=True):
         """
@@ -345,6 +354,9 @@ class PosableGroup(Posable):
     # We don't want to render outer posable group
     TAG_NAME = None
 
+    # Do not render the `Pose` element
+    RENDER_POSE = None
+
     def __init__(self, name=None, pose=None, **kwargs):
         """
         Overrides init to make name optional, it is not useful
@@ -387,14 +399,6 @@ class PosableGroup(Posable):
         """
         return [posable for posable in self.elements
                 if isinstance(posable, Posable) and posable.PARENT_FRAME]
-
-    def render_elements(self):
-        """
-        Filter the pose out of the group's elements; we don't
-        want it rendered
-        :return:
-        """
-        return [el for el in super(PosableGroup, self).render_elements() if not isinstance(el, Pose)]
 
     def set_rotation(self, rotation):
         """
