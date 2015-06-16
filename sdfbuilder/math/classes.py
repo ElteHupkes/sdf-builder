@@ -28,9 +28,9 @@ class VectorBase(object):
         :return:
         """
         if len(args) == 1 and hasattr(args[0], '__iter__'):
-            self.data = np.array(args[0], copy=True)
+            self.data = np.array(args[0], dtype=np.float_, copy=True)
         else:
-            self.data = np.array(args, copy=True)
+            self.data = np.array(args, dtype=np.float_, copy=True)
 
         assert len(self.data) == self.LENGTH, \
             "Invalid data size %d, expecting %d" % (len(self.data), self.LENGTH)

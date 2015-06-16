@@ -2,7 +2,7 @@
 Simple geometries such as box, cylinder and sphere.
 """
 from __future__ import division
-from ..math import Vector3, Quaternion
+from ..math import Vector3
 from ..posable import Posable, PosableGroup
 from ..util import number_format as nf
 from ..physics.inertial import Inertial, transform_inertia_tensor
@@ -91,7 +91,9 @@ class CompoundGeometry(PosableGroup, BaseGeometry):
     def get_center_of_mass(self):
         """
         :return:
+        :rtype: Vector3
         """
+        total_mass = 0.0
         center_mass = Vector3(0, 0, 0)
         for geometry in self.geometries:
             # Get the geometry's center of mass and translate it to the
@@ -102,9 +104,11 @@ class CompoundGeometry(PosableGroup, BaseGeometry):
                 self
             )
 
-            center_mass += geometry.get_mass() * geom_center
+            mass = geometry.get_mass()
+            total_mass += mass
+            center_mass += mass * geom_center
 
-        return center_mass / self.get_mass()
+        return center_mass / total_mass
 
     def __init__(self, **kwargs):
         """
@@ -118,15 +122,11 @@ class CompoundGeometry(PosableGroup, BaseGeometry):
         Adds a geometry to the group along with all the possible
         arguments required to get its inertia.
         :param geometry:
-        :type geometry: Geometry
-        :param mass:
-        :type mass: float
-        :param kwargs:
-        :type kwargs: dict
+        :type geometry: Geometry|CompoundGeometry
         """
         self.geometries.append(geometry)
 
-    def get_inertial(self, at=None):
+    def get_inertial(self):
         """
         Returns the inertia tensor for all the combined positioned
         geometries in this compound geometry.
@@ -155,12 +155,13 @@ class CompoundGeometry(PosableGroup, BaseGeometry):
             # as if the object has zero rotation, and calculate the tensor
             # resulting from rotating the object around its actual rotation.
             rotation = self.get_rotation().conjugated() * geometry.get_rotation()
-            i_final += transform_inertia_tensor(
+            j1 = transform_inertia_tensor(
                 geometry.get_mass(),
                 geometry.get_inertial().get_matrix(),
                 center_mass - geom_center,
                 rotation
             )
+            i_final += j1
 
         total_mass = self.get_mass()
         inertial = Inertial.from_mass_matrix(total_mass, i_final)

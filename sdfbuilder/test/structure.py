@@ -24,6 +24,31 @@ class TestGeometry(unittest.TestCase):
         self.assertAlmostEquals(inert.ixz, 0)
         self.assertAlmostEquals(inert.iyz, 0)
 
+    def test_compound_center_mass(self):
+        """
+        Born from a numerical oddity in the compound inertial
+        test; checks the center of mass for a compound geometry.
+        """
+        compound = CompoundGeometry()
+        y_axis = Vector3(0, 1, 0)
+        deg90 = 0.5 * math.pi
+
+        frac_up = 57.5
+        sub1 = Box(5, 6, 4, mass=6 * frac_up)
+        sub1.rotate_around(y_axis, deg90)
+        sub1.translate(Vector3(0, 1, 2.5))
+        compound.add_geometry(sub1)
+
+        sub2 = Box(5, 2, 4, mass=2 * frac_up)
+        sub2.rotate_around(y_axis, deg90)
+        sub2.translate(Vector3(0, -3, 2.5))
+        compound.add_geometry(sub2)
+
+        x, y, z = compound.get_center_of_mass()
+        self.assertAlmostEquals(x, 0)
+        self.assertAlmostEquals(y, 0)
+        self.assertAlmostEquals(z, 2.5)
+
     def test_compound_inertia(self):
         """
         Performs a simple compound geometry inertia check
@@ -89,7 +114,20 @@ class TestGeometry(unittest.TestCase):
         sub3.translate(Vector3(0, 0, -3.5))
         compound.add_geometry(sub3)
 
-        print(compound.get_mass())
+        i2 = compound.get_inertial()
+        self.assertEqualTensors(i1, i2)
+
+        # Let's try this same thing again, only combining
+        # sub1 and sub2 in a nested compound geometry
+        compound = CompoundGeometry()
+        inner_compound = CompoundGeometry()
+
+        inner_compound.add_geometry(sub1)
+        inner_compound.add_geometry(sub2)
+
+        compound.add_geometry(inner_compound)
+        compound.add_geometry(sub3)
+
         i2 = compound.get_inertial()
         self.assertEqualTensors(i1, i2)
 
