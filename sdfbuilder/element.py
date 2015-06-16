@@ -156,7 +156,7 @@ class Element(object):
         body = self.render_body()
         tag_name = self.TAG_NAME if self.tag_name is None else self.tag_name
 
-        if tag_name is None:
+        if tag_name:
             return body
         else:
             attrs = " ".join([a+"="+quoteattr(
