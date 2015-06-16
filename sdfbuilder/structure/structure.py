@@ -3,6 +3,7 @@ Collision / visual and geometry like classes
 """
 from ..posable import Posable
 from ..element import Element
+from .geometries import BaseGeometry
 
 
 class Structure(Posable):
@@ -13,6 +14,8 @@ class Structure(Posable):
         """
 
         :param name:
+        :param geometry:
+        :type geometry: BaseGeometry
         :param kwargs:
         :return:
         """
@@ -20,9 +23,7 @@ class Structure(Posable):
 
         # Only the geometry of a structure has a pose
         self._pose = None
-
         self.geometry = geometry
-        """:type : Geometry"""
 
     # Delegate all position and rotation calls to the geometry object
     def set_position(self, position):
@@ -36,6 +37,9 @@ class Structure(Posable):
 
     def get_rotation(self):
         return self.geometry.get_rotation()
+
+    def get_pose(self):
+        return self.geometry.get_pose()
 
     def render_elements(self):
         """

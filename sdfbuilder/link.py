@@ -85,7 +85,7 @@ class Link(Posable):
         :param name_prefix:
         :return: Newly created visual and collision elements, if applicable
         """
-        return self.make_geometry(Box(x, y, z), mass, collision=collision,
+        return self.make_geometry(Box(x, y, z, mass), collision=collision,
                                   visual=visual, inertia=inertia, name_prefix=name_prefix)
 
     def make_cylinder(self, mass, radius, length, collision=True, visual=True,
@@ -103,9 +103,8 @@ class Link(Posable):
         :param r1: If `tube` is `True`, inner radius of the tube
         :return:
         """
-        return self.make_geometry(Cylinder(radius, length), mass=mass, collision=collision,
-                                  visual=visual, inertia=inertia, name_prefix=name_prefix,
-                                  tube=tube, r1=r1)
+        return self.make_geometry(Cylinder(radius, length, mass=mass, tube=tube, r1=r1), collision=collision,
+                                  visual=visual, inertia=inertia, name_prefix=name_prefix)
 
     def make_sphere(self, mass, radius, collision=True, visual=True, inertia=True,
                     name_prefix="", solid=True):
@@ -120,14 +119,21 @@ class Link(Posable):
         :param solid: Whether the sphere is solid
         :return:
         """
-        return self.make_geometry(Sphere(radius), mass=mass, collision=collision,
-                                  visual=visual, inertia=inertia, name_prefix=name_prefix, solid=solid)
+        return self.make_geometry(Sphere(radius, mass=mass, solid=solid), collision=collision,
+                                  visual=visual, inertia=inertia, name_prefix=name_prefix)
 
-    def make_geometry(self, geometry, mass=1.0, collision=True, visual=True,
-                      inertia=True, name_prefix="", **kwargs):
+    def make_geometry(self, geometry, collision=True, visual=True,
+                      inertia=True, name_prefix=""):
         """
+        Gives a link a certain geometry by creating visual and collision objects
+        as desired. This should only be called once for a Link, unless
+        created items are cleaned up. If `inertia` is set to `True`, the link
+        will instantiate its inertia tensor to that of the geometry. Note that
+        the geometry must be fully initialized for this to work, as the inertia
+        tensor is not updated if the geometry is changed later.
+
         :param geometry:
-        :type geometry: Geometry
+        :type geometry: Geometry|CompoundGeometry
         :param mass:
         :type mass: float
         :param collision: Add a box collision
@@ -143,7 +149,11 @@ class Link(Posable):
         return_value = []
 
         if inertia:
-            self.inertial = geometry.get_inertial(mass, **kwargs)
+            # We're given the inertia tensor as it is relative to the geometry's
+            # center of mass, and we need it relative to the origin.
+            rotation = geometry.get_rotation().conjugated()
+            displacement = -geometry.to_parent_frame(geometry.get_center_of_mass())
+            self.inertial = geometry.get_inertial().transformed(displacement, rotation)
 
         if collision:
             col = Collision(name=name_prefix+"collision", geometry=geometry)

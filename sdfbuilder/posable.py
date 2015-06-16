@@ -103,6 +103,13 @@ class Posable(Element):
         """
         return self._pose.position.copy()
 
+    def get_pose(self):
+        """
+        :return: Pose object. Warning: this is not a copy.
+        :rtype: Pose
+        """
+        return self._pose
+
     def translate(self, translation):
         """
         :type translation: Vector3
@@ -138,7 +145,8 @@ class Posable(Element):
         :return:
         :rtype: list
         """
-        elmns = [self._pose] if self.RENDER_POSE and self._pose else []
+        pose = self.get_pose()
+        elmns = [pose] if self.RENDER_POSE and pose else []
         return elmns + super(Posable, self).render_elements()
 
     def rotate_around(self, axis, angle, relative_to_child=True):
@@ -355,7 +363,7 @@ class PosableGroup(Posable):
     TAG_NAME = None
 
     # Do not render the `Pose` element
-    RENDER_POSE = None
+    RENDER_POSE = False
 
     def __init__(self, name=None, pose=None, **kwargs):
         """
