@@ -56,43 +56,40 @@ class TestGeometry(unittest.TestCase):
         i2 = compound.get_inertial()
         self.assertEqualTensors(i1, i2)
 
-        # Finally, something involving rotation,
-        # and different sizes.
+        # Finally, something involving rotation, and different sizes.
+        # Note that we get the inertia tensor relative to the compound's
+        # center of mass, so it doesn't actually matter exactly how it's
+        # aligned on the axes.
         compound = CompoundGeometry()
+        y_axis = Vector3(0, 1, 0)
+        deg90 = 0.5 * math.pi
 
-        # We'll divide the z-axis
+        # Split 5 / 7 in z-direction
         frac = total_mass / 12.0
-        total_up = 4 * frac
-        frac_up = total_up / 8.0
-        total_down = 8 * frac
-        frac_down = total_down / 8.0
+        total_up = 5 * frac
+        total_down = 7 * frac
 
-        # Rotate such that the x axis becomes the z axis (and
-        # vice versa). Then divide that axis into 4/12 above,
-        # 8/12 below. Above then into 3/5, below into 6/2 at
-        # the y-axis.
-        sub1 = Box(4, 3, 4, mass=3 * frac_up)
-        sub2 = Box(4, 5, 4, mass=5 * frac_up)
-        sub1.rotate_around(Vector3(0, 1, 0), -0.5 * math.pi)
-        sub2.rotate_around(Vector3(0, 1, 0), -0.5 * math.pi)
-        sub1.translate(Vector3(0, -1.5, 2))
-        sub2.translate(Vector3(0, 2.5, 2))
+        # We split the upper part 6 / 2 in the y-direction
+        # The alignment with the lower part in y *does* matter,
+        # it should still be centered. We translate sub1
+        # +1 so the total mass on the + side is 4,
+        # and translate sub2 -3 to align with its left side.
+        frac_up = total_up / 8.0
+        sub1 = Box(5, 6, 4, mass=6 * frac_up)
+        sub1.rotate_around(y_axis, deg90)
+        sub1.translate(Vector3(0, 1, 2.5))
         compound.add_geometry(sub1)
+
+        sub2 = Box(5, 2, 4, mass=2 * frac_up)
+        sub2.rotate_around(y_axis, deg90)
+        sub2.translate(Vector3(0, -3, 2.5))
         compound.add_geometry(sub2)
 
-        sub3 = Box(4, 8, 8, mass=total_down)
-        sub3.translate(Vector3(0, 0, -4))
+        sub3 = Box(4, 8, 7, mass=total_down)
+        sub3.translate(Vector3(0, 0, -3.5))
         compound.add_geometry(sub3)
 
-        # sub3 = Box(8, 6, 4, mass=6 * frac_down)
-        # sub4 = Box(8, 2, 4, mass=2 * frac_down)
-        # sub3.rotate_around(Vector3(0, 1, 0), -0.5 * math.pi)
-        # sub4.rotate_around(Vector3(0, 1, 0), -0.5 * math.pi)
-        # sub3.translate(Vector3(0, -3, -4))
-        # sub4.translate(Vector3(0, 1, -4))
-        # compound.add_geometry(sub3)
-        # compound.add_geometry(sub4)
-
+        print(compound.get_mass())
         i2 = compound.get_inertial()
         self.assertEqualTensors(i1, i2)
 

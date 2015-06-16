@@ -146,7 +146,14 @@ class CompoundGeometry(PosableGroup, BaseGeometry):
                 self
             )
 
-            # We require the rotation that takes the
+            # We have the inertia tensor in the object's frame,
+            # i.e. as if it isn't rotated. We want to return it
+            # in this object's frame, i.e. as if the compound isn't
+            # rotated. The rotation for that is the total rotation
+            # of the object, with the rotation of the compound cancelled
+            # out. Conceptually, we now start with the inertia tensor
+            # as if the object has zero rotation, and calculate the tensor
+            # resulting from rotating the object around its actual rotation.
             rotation = self.get_rotation().conjugated() * geometry.get_rotation()
             i_final += transform_inertia_tensor(
                 geometry.get_mass(),
