@@ -3,6 +3,7 @@ Basic SDF builder element.
 """
 from xml.sax.saxutils import quoteattr
 from .util import number_format as nf
+import copy
 
 
 class Element(object):
@@ -172,6 +173,13 @@ class Element(object):
         :rtype: str
         """
         return self.TAG_NAME if self.tag_name is None else self.tag_name
+
+    def copy(self, deep=True):
+        """
+        Wrapper over __copy__()
+        :return:
+        """
+        return copy.deepcopy(self) if deep else copy.copy(self)
 
     def __str__(self):
         """
