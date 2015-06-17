@@ -235,7 +235,7 @@ class Posable(Element):
         :param sibling: The sibling posable
         :type sibling: Posable
         :return:
-        :rtype: Vector3
+        :rtype: Vector3|Quaternion
         """
         in_parent = self.to_parent_direction(vec)
         return sibling.to_local_direction(in_parent)
