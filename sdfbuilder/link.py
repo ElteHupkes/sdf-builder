@@ -1,8 +1,10 @@
+from physics.inertial import transform_inertia_tensor
 from .posable import Posable
 from .element import Element
 from .physics import Inertial
 from .structure import Collision, Visual
 from .structure.geometries import Geometry, Box, Cylinder, Sphere
+import numpy as np
 
 
 class Link(Posable):
@@ -121,6 +123,31 @@ class Link(Posable):
         """
         return self.make_geometry(Sphere(radius, mass=mass, solid=solid), collision=collision,
                                   visual=visual, inertia=inertia, name_prefix=name_prefix)
+
+    def calculate_inertial(self):
+        """
+        Calculates and sets this Link's inertial properties by
+        iterating all collision elements inside of it and combining
+        their Geometry's inertias.
+        :return:
+        """
+        collisions = self.get_elements_of_type(Collision)
+        i_final = np.zeros((3, 3))
+        total_mass = 0.0
+        for col in collisions:
+            rotation = col.get_rotation()
+            position = col.get_position()
+            geometry = col.geometry
+            mass = geometry.get_mass()
+            total_mass += mass
+            i_final += transform_inertia_tensor(
+                mass,
+                geometry.get_inertial().get_matrix(),
+                position,
+                rotation
+            )
+
+        self.inertial = Inertial.from_mass_matrix(total_mass, i_final)
 
     def make_geometry(self, geometry, collision=True, visual=True,
                       inertia=True, name_prefix=""):
