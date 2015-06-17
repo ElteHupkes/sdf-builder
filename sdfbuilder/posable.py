@@ -170,21 +170,21 @@ class Posable(Element):
 
     def to_parent_direction(self, vec):
         """
-        Returns the given direction vector relative to the parent frame.
-        :param vec: Vector in the local frame
-        :type vec: Vector3
+        Returns the given direction vector / rotation quaternion relative to the parent frame.
+        :param vec: Vector or quaternion in the local frame
+        :type vec: Vector3|Quaternion
         :return:
-        :rtype: Vector3
+        :rtype: Vector3|Quaternion
         """
         return self.get_rotation() * vec
 
     def to_local_direction(self, vec):
         """
-        Returns the given direction vector relative to the local frame
-        :param vec: Direction vector in the parent frame
-        :type vec: Vector3
+        Returns the given direction vector / rotation quaternion relative to the local frame
+        :param vec: Direction vector or orientation in the parent frame
+        :type vec: Vector3|Quaternion
         :return:
-        :rtype: Vector3
+        :rtype: Vector3|Quaternion
         """
         return self.get_rotation().conjugated() * vec
 
