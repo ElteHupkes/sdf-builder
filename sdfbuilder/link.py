@@ -131,7 +131,7 @@ class Link(Posable):
         their Geometry's inertias.
         :return:
         """
-        collisions = self.get_elements_of_type(Collision)
+        collisions = self.get_elements_of_type(Collision, True)
         i_final = np.zeros((3, 3))
         total_mass = 0.0
         for col in collisions:
