@@ -228,9 +228,10 @@ class Posable(Element):
 
     def to_sibling_direction(self, vec, sibling):
         """
-        Returns the given direction vector relative to the frame of a sibling
-        :param vec: Direction vector in the child frame
-        :type vec: Vector3
+        Returns the given direction vector / orientation quaternion
+        relative to the frame of a sibling
+        :param vec: Direction vector / orientation quaternion in the child frame
+        :type vec: Vector3|Quaternion
         :param sibling: The sibling posable
         :type sibling: Posable
         :return:
