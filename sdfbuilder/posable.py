@@ -14,14 +14,14 @@ class Pose(Element):
 
     TAG_NAME = 'pose'
 
-    def __init__(self, **kwargs):
+    def __init__(self, position=None, rotation=None, **kwargs):
         """
         """
         super(Pose, self).__init__(**kwargs)
 
         # Zero position and identity rotation
-        self.position = Vector3()
-        self.rotation = Quaternion()
+        self.position = Vector3() if position is None else position
+        self.rotation = Quaternion() if rotation is None else rotation
 
     def render_body(self):
         """
