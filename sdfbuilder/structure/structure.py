@@ -3,7 +3,7 @@ Collision / visual and geometry like classes
 """
 from ..posable import Posable
 from ..element import Element
-from .geometries import BaseGeometry
+from .geometries import Geometry, CompoundGeometry
 
 
 class Structure(Posable):
@@ -15,7 +15,7 @@ class Structure(Posable):
 
         :param name:
         :param geometry:
-        :type geometry: BaseGeometry
+        :type geometry: CompoundGeometry|Geometry
         :param kwargs:
         :return:
         """
@@ -46,6 +46,35 @@ class Structure(Posable):
         :return:
         """
         return super(Structure, self).render_elements() + [self.geometry]
+
+    def render(self):
+        """
+        Override render to create a list of sub elements instead of a
+        parent element if the child is a compound.
+        :return:
+        """
+        if not isinstance(self.geometry, CompoundGeometry):
+            return super(Structure, self).render()
+
+        geometries = self.geometry.geometries
+        """ :type : [Geometry] """
+
+        elements = []
+        for i in range(len(geometries)):
+            # Create a new element of self-type that inherits
+            # all this structure's properties.
+            # Note that if one of these geometries is again a compound
+            # geometry, its render method will do the same thing as this
+            # and produce a list of objects.
+            elements.append(self.__class__(
+                name=self.name+"_"+str(i),
+                geometry=geometries[i],
+                elements=self.elements,
+                body=self.body,
+                attributes=self.attributes
+            ))
+
+        return "".join(str(el) for el in elements)
 
 
 class Collision(Structure):

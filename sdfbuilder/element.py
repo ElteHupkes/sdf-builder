@@ -154,9 +154,9 @@ class Element(object):
         all_attrs = self.render_attributes()
 
         body = self.render_body()
-        tag_name = self.TAG_NAME if self.tag_name is None else self.tag_name
+        tag_name = self.get_tag_name()
 
-        if tag_name:
+        if not tag_name:
             return body
         else:
             attrs = " ".join([a+"="+quoteattr(
@@ -165,6 +165,13 @@ class Element(object):
             ) for a in all_attrs])
             tag_open = tag_name + " " + attrs if len(attrs) else tag_name
             return "<%s />" % tag_open if len(body) == 0 else "<%s>%s</%s>" % (tag_open, body, tag_name)
+
+    def get_tag_name(self):
+        """
+        :return:
+        :rtype: str
+        """
+        return self.TAG_NAME if self.tag_name is None else self.tag_name
 
     def __str__(self):
         """
