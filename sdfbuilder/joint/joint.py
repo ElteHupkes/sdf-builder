@@ -16,9 +16,10 @@ class Joint(Posable):
     # Joint has a pose, but it is not in the parent frame
     PARENT_FRAME = False
 
-    def __init__(self, joint_type, parent, child, axis=None, name=None, **kwargs):
+    def __init__(self, joint_type, parent, child, axis=None, axis2=None, name=None, **kwargs):
         """
-
+        :param axis:
+        :param axis2:
         :param joint_type:
         :type joint_type: str
         :param parent:
@@ -41,7 +42,11 @@ class Joint(Posable):
         if isinstance(axis, Vector3):
             axis = Axis(axis=axis)
 
+        if isinstance(axis2, Vector3):
+            axis2 = Axis(axis=axis2, tag_name='axis2')
+
         self.axis = Axis() if axis is None else axis
+        self.axis2 = axis2
 
     def render_elements(self):
         """
@@ -50,6 +55,11 @@ class Joint(Posable):
         elements = ["<parent>"+self.parent.name+"</parent>",
                     "<child>"+self.child.name+"</child>",
                     self.axis]
+
+        if self.axis2 is not None:
+            self.axis2.tag_name = 'axis2'
+            elements.append(self.axis2)
+
         return super(Joint, self).render_elements() + elements
 
     def render_attributes(self):
