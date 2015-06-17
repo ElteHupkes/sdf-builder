@@ -16,7 +16,7 @@ class Joint(Posable):
     # Joint has a pose, but it is not in the parent frame
     PARENT_FRAME = False
 
-    def __init__(self, joint_type, parent, child, axis=None, axis2=None, name=None, **kwargs):
+    def __init__(self, joint_type, parent, child, pose=None, axis=None, axis2=None, name=None, **kwargs):
         """
         :param axis:
         :param axis2:
@@ -33,7 +33,7 @@ class Joint(Posable):
         if name is None:
             name = "joint_"+parent.name+"_"+child.name
 
-        super(Joint, self).__init__(name=name, **kwargs)
+        super(Joint, self).__init__(name=name, pose=pose, **kwargs)
 
         self.parent = parent
         self.child = child
