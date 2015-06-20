@@ -161,8 +161,6 @@ class Link(Posable):
 
         :param geometry:
         :type geometry: Geometry|CompoundGeometry
-        :param mass:
-        :type mass: float
         :param collision: Add a box collision
         :type collision: bool
         :param visual: Add a box visual
