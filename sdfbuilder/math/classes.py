@@ -107,7 +107,7 @@ class VectorBase(object):
         """
         Normalizes this object
         """
-        self.data /= self.norm
+        self.data /= self.norm()
 
     def normalized(self):
         """
