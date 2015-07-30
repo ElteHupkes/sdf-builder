@@ -5,7 +5,7 @@ import numpy as np
 
 def transform_inertia_tensor(mass, tensor, displacement, rotation):
     """
-    Transforms an inertia tensor into a new reference frame using
+    Transforms an inertia tensor to a new reference frame using
     the parallel axis theorem.
 
     https://en.wikipedia.org/wiki/Parallel_axis_theorem

@@ -167,6 +167,7 @@ class CompoundGeometry(PosableGroup, BaseGeometry):
         inertial = Inertial.from_mass_matrix(total_mass, i_final)
         return inertial
 
+
 class Box(Geometry):
     """
     Represents a box geometry, i.e.

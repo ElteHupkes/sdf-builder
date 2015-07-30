@@ -1,14 +1,18 @@
 from sdfbuilder import Element
 import unittest
 
+
 class A(Element):
     pass
+
 
 class B(Element):
     pass
 
+
 class C(B):
     pass
+
 
 class TestElement(unittest.TestCase):
     def test_filter(self):

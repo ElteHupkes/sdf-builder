@@ -1,7 +1,7 @@
 """
 Collision / visual and geometry like classes
 """
-from ..posable import Posable
+from ..posable import Posable, PosableGroup
 from ..element import Element
 from .geometries import Geometry, CompoundGeometry
 
@@ -108,6 +108,28 @@ class Visual(Structure):
         specular = '0.1 0.1 0.1 %.2f' % a
         self.add_element(Material(body="<ambient>%s</ambient><diffuse>%s</diffuse><specular>%s</specular>" %
                                        (color, color, specular)))
+
+
+class StructureCombination(PosableGroup):
+    """
+    PosableGroup wrapper over a visual and a collision element
+    that share a Geometry.
+    """
+
+    def __init__(self, name, geometry, **kwargs):
+        """
+        :param name:
+        :type name: str
+        :param geometry:
+        :type geometry: Geometry
+        :param kwargs:
+        :return:
+        """
+        super(StructureCombination, self).__init__(name, **kwargs)
+        self.geometry = geometry
+        self.collision = Collision(name+"_collision", geometry.copy())
+        self.visual = Visual(name+"_visual", geometry.copy())
+        self.add_elements([self.collision, self.visual])
 
 
 class Material(Element):

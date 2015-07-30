@@ -30,5 +30,5 @@ class Model(Posable):
         Returns all elements plus the "static" property.
         :return:
         """
-        static = "<static>%s</static>" % str(self.static)
+        static = "<static>%d</static>" % int(self.static)
         return super(Model, self).render_elements() + [static]

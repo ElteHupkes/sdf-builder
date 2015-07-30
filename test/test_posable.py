@@ -44,7 +44,7 @@ class TestPosable(unittest.TestCase):
         align transformations and tests the resulting positions.
         :return:
         """
-        from ..examples.complex_align import link, minibox, link2
+        from sdfbuilder.examples.complex_align import link, minibox, link2
 
         # Now, the asserts. These positions have been verified through
         # visual inspection and then copied from the SDF - we might thus
