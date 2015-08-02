@@ -70,6 +70,17 @@ class Posable(Element):
         self._pose = Pose() if pose is None else pose
         self.name = name
 
+    def set_pose(self, pose):
+        """
+        Shortcut call over `set_position` and `set_rotation` for
+        a given pose.
+        :param pose:
+        :type pose: Pose
+        :return:
+        """
+        self.set_position(pose.position)
+        self.set_rotation(pose.rotation)
+
     def set_rotation(self, rotation):
         """
         :type rotation: Quaternion
