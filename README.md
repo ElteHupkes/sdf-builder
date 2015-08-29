@@ -7,7 +7,7 @@ everywhere. SDF Builder simplifies this by allowing you to align elements with e
 positioning them absolutely.
 
 # Features
-- Wrappers over the most common SDF elements (well.. see features)
+- Wrappers over the most common SDF elements (well.. see examples)
 - Simple vector math library based on good old `transformations.py`
 - Item alignment, specify how two items align with each other
 - Compound inertia tensors, just add positioned `Collision` elements to
