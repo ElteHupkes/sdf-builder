@@ -9,7 +9,7 @@ positioning them absolutely.
 # Features
 - Wrappers over the most common SDF elements (well.. see examples)
 - Simple vector math library based on good old `transformations.py`
-- Item alignment, specify how two items align with each other
+- Item alignment, specify how two elements (links, collisions, etc) align with each other rather than setting their exact positions.
 - Compound inertia tensors, just add positioned `Collision` elements to
   your `Link`s, `Link.calculate_inertial()` will set the correct inertia
   tensor for you.
