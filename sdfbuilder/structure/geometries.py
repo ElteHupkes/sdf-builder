@@ -298,3 +298,25 @@ class Sphere(Geometry):
         frac = 5.0 if self.solid else 3.0
         ixx = (2 * mass * self.radius**2) / frac
         return Inertial(mass=mass, ixx=ixx, iyy=ixx, izz=ixx)
+
+
+class Mesh(Geometry):
+    """
+    Mesh geometry. Since we cannot determine the inertia
+    of meshes here, you need to extend this class with
+    the full geometry methods in order to use this for
+    anything else than a visual.
+    """
+
+    def __init__(self, uri, **kwargs):
+        super(Mesh, self).__init__(**kwargs)
+        self.uri = uri
+
+    def render_elements(self):
+        """
+        Adds the mesh geometry
+        :return:
+        """
+        elements = super(Mesh, self).render_elements()
+        elements.append("<mesh><uri>%s</uri></mesh>" % self.uri)
+        return elements
