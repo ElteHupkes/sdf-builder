@@ -74,6 +74,22 @@ class VectorBase(object):
 
         return self.data[idx]
 
+    def __setattr__(self, key, value):
+        """
+
+        :param key:
+        :param value:
+        :return:
+        """
+        try:
+            idx = self.ATTRS.index(key)
+            self.data[idx] = value
+            return value
+        except ValueError:
+            # Ignore error, just pass on to parent
+            pass
+        return super(VectorBase, self).__setattr__(key, value)
+
     def __iter__(self):
         """
         """
