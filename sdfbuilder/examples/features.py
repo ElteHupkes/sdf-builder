@@ -53,11 +53,12 @@ link = Link("my_link", elements=[box, cylinder])
 
 # Calculate the correct inertial properties given
 # the collision elements.
+link.align_center_of_mass()
 link.calculate_inertial()
 
 # Rotate the link 45 degrees around the x-axis, specified in the parent frame
-# (not that it matters at this point), just to demonstrate how that works
-# (and to demonstrate align is still going to work after the rotation).
+# just to demonstrate how that works (and to demonstrate align is still
+# going to work after the rotation).
 link.rotate_around(Vector3(1, 0, 0), math.radians(45), relative_to_child=False)
 
 # Okay, not sure what this is supposed to be, but let's another wheel-like cylinder in

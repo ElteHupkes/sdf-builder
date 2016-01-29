@@ -182,17 +182,26 @@ class Link(Posable):
 
         return com
 
-    def align_center_of_mass(self, types=(Visual, Collision)):
+    def align_center_of_mass(self, types=(Posable,), recursive=False, elements=None):
         """
-        Aligns all `Visual` and `Collision` elements inside this link
-        such that the center of mass is located at the link's origin.
-        :param types: Element types to search for and translate
-        :type: class-or-tuple
+        Aligns all elements within this link to get the center of mass
+        to be at the link's origin. By default, all first level `Posable`
+        elements are moved, but this can be changed depending on what is needed.
+
+        :param types: Element types to search for and translate,
+                      first argument to `get_elements_of_type`. Defaults to
+                      any posable.
+        :type types: class-or-tuple
+        :param recursive: Second argument to `get_elements_of_type`. Defaults to false.
+        :type recursive: bool
+        :param elements: Direct iterable of elements to apply transformation to if standard
+                         `get_elements_of_type` does not apply.
+        :type elements: iterable
         :return:
         :rtype: The translation used on all elements
         """
         translation = -self.get_center_of_mass()
-        elms = self.get_elements_of_type(types, recursive=True)
+        elms = self.get_elements_of_type(types, recursive=recursive) if elements is None else elements
         for el in elms:
             el.translate(translation)
 
