@@ -9,6 +9,8 @@ def transform_inertia_tensor(mass, tensor, displacement, rotation):
     the parallel axis theorem.
 
     https://en.wikipedia.org/wiki/Parallel_axis_theorem
+    :param mass:
+    :type mass: float
     :param tensor: The inertia tensor as a numpy array
     :type tensor: ndarray
     :param displacement: The displacement vector `d`, where `d` is

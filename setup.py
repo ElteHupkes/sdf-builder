@@ -2,7 +2,7 @@
 from distutils.core import setup
 
 setup(name='sdfbuilder',
-      version=0.1,
+      version=0.2,
       description='Pragmatic utility library for building SDF files',
       author='Elte Hupkes',
       author_email='elte@hupkes.org',

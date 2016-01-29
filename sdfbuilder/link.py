@@ -1,4 +1,8 @@
+from __future__ import print_function
+import sys
+
 from physics.inertial import transform_inertia_tensor
+from .math import Vector3
 from .posable import Posable
 from .element import Element
 from .physics import Inertial
@@ -129,8 +133,15 @@ class Link(Posable):
         Calculates and sets this Link's inertial properties by
         iterating all collision elements inside of it and combining
         their Geometry's inertias.
+
+        Note that in order for an inertia tensor to make sense in Gazebo,
+        the center of mass needs to be aligned with the `Link` center of mass.
+        This method prints an error if this is currently not the case.
         :return:
         """
+        if not np.allclose(self.get_center_of_mass().norm(), 0):
+            print("WARNING: calculating inertial for link with nonzero center of mass.", file=sys.stderr)
+
         collisions = self.get_elements_of_type(Collision, recursive=True)
         i_final = np.zeros((3, 3))
         total_mass = 0.0
@@ -148,6 +159,44 @@ class Link(Posable):
             )
 
         self.inertial = Inertial.from_mass_matrix(total_mass, i_final)
+
+    def get_center_of_mass(self):
+        """
+        Calculate the center of mass of all the collisions inside
+        this link.
+        :return: The center of mass as determined by all the collision geometries
+        :rtype: Vector3
+        """
+        collisions = self.get_elements_of_type(Collision, recursive=True)
+        com = Vector3(0, 0, 0)
+        total_mass = 0.0
+        for col in collisions:
+            geometry = col.geometry
+            col_com = col.to_parent_frame(geometry.get_center_of_mass())
+            mass = geometry.get_mass()
+            com += mass * col_com
+            total_mass += mass
+
+        if total_mass > 0:
+            com /= total_mass
+
+        return com
+
+    def align_center_of_mass(self, types=(Visual, Collision)):
+        """
+        Aligns all `Visual` and `Collision` elements inside this link
+        such that the center of mass is located at the link's origin.
+        :param types: Element types to search for and translate
+        :type: class-or-tuple
+        :return:
+        :rtype: The translation used on all elements
+        """
+        translation = -self.get_center_of_mass()
+        elms = self.get_elements_of_type(types, recursive=True)
+        for el in elms:
+            el.translate(translation)
+
+        return translation
 
     def make_geometry(self, geometry, collision=True, visual=True,
                       inertia=True, name_prefix=""):
