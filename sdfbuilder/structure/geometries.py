@@ -319,6 +319,16 @@ class Mesh(Geometry):
         :return:
         """
         elements = super(Mesh, self).render_elements()
-        scale = "<scale>%s</scale>" % nf(self.scale) if self.scale is not None else ""
+
+        if self.scale is not None:
+            try:
+                x, y, z = self.scale
+            except TypeError:
+                x = y = z = self.scale
+
+            scale = "<scale>%s %s %s</scale>" % (nf(x), nf(y), nf(z))
+        else:
+            scale = ""
+
         elements.append("<mesh><uri>%s</uri>%s</mesh>" % (self.uri, scale))
         return elements
