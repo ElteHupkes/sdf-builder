@@ -308,9 +308,10 @@ class Mesh(Geometry):
     anything else than a visual.
     """
 
-    def __init__(self, uri, **kwargs):
+    def __init__(self, uri, scale=None, **kwargs):
         super(Mesh, self).__init__(**kwargs)
         self.uri = uri
+        self.scale = scale
 
     def render_elements(self):
         """
@@ -318,5 +319,6 @@ class Mesh(Geometry):
         :return:
         """
         elements = super(Mesh, self).render_elements()
-        elements.append("<mesh><uri>%s</uri></mesh>" % self.uri)
+        scale = "<scale>%s</scale>" % nf(self.scale) if self.scale is not None else ""
+        elements.append("<mesh><uri>%s</uri>%s</mesh>" % (self.uri, scale))
         return elements
