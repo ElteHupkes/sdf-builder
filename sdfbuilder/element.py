@@ -127,6 +127,8 @@ class Element(object):
         method.
         :return:
         """
+        if self.attributes is None:
+            return {}
         return self.attributes.copy()
 
     def render_elements(self):
